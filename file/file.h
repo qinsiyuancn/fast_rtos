@@ -8,13 +8,12 @@
  #ifndef __FILE_H__
  #define __FILE_H__
 
- struct file_operation{
-    void (*init)();
-	int (*open)(const char *pathname, int flags);
-	int (*read)(void *buf, unsigned long count);
-	int (*write)(const void *buf, unsigned long count);
-	int (*ioctl)(unsigned int request, unsigned long arg);
-	int (*close)();
- };
+typedef struct file
+{
+    const char * const name;
+    const unsigned int device;
+    const unsigned int driver;
+    const unsigned int bus;
+} file;
 
  #endif

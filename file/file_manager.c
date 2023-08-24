@@ -1,13 +1,14 @@
 #include "file_manager.h"
+#include "file.h"
+#include "driver_manager.h"
 
 #define file_count (sizeof(files)/sizeof(files[0]))
-
-#define check_fd(fd) do{if(fd < 0) return -1;if(fd >= file_count) return -1;}while(0)
 
 /*
  * 文件列表
  */
-static const struct file_operation * const files[] = FILE_LIST;
+
+static const struct files[] = FILE_LIST;
 
 /*
  * 查询指定驱动的的fd
@@ -19,12 +20,10 @@ static const struct file_operation * const files[] = FILE_LIST;
 int open(const char *pathname, int flags)
 {
 	unsigned int i = 0;
-	for(i = 0; i < file_count; i++){
-		if(files[i])
-			if(files[i]->open)
-				if(files[i]->open(pathname, flags))
-					return i;
-	}
+	for(i = 0; i < file_count; i++)
+	    if(!strcmp(filename, cpld_filename))
+	        if(driver_open(files[i].driver, files[i].bus, files[i].device))	
+	            return i;
 	return -1;
 }
 
@@ -37,11 +36,7 @@ int open(const char *pathname, int flags)
  */
 int read(int fd, void *buf, unsigned long count)
 {
-	check_fd(fd);
-	if(files[fd])
-		if(files[fd]->read)
-			return(files[fd]->read(buf, count));
-	return -1;
+	return driver_read(files[fd].driver, files[i].bus, files[i].device, buf, count);
 }
 
 /*
@@ -53,11 +48,7 @@ int read(int fd, void *buf, unsigned long count)
  */
 int write(int fd, const void *buf, unsigned long count)
 {
-	check_fd(fd);
-	if(files[fd])
-		if(files[fd]->write)
-			return(files[fd]->write(buf, count));
-	return -1;
+    return driver_write(files[fd].driver, files[fd].bus, files[fd].device, buf, count);
 }
 
 /*
@@ -69,11 +60,7 @@ int write(int fd, const void *buf, unsigned long count)
  */
 int ioctl(int fd, int request, void * param)
 {
-	check_fd(fd);
-	if(files[fd])
-		if(files[fd]->ioctl)
-			return(files[fd]->ioctl(request, (unsigned long) param));
-	return -1;
+    return driver_ioctl(files[fd].driver, files[fd].bus, files[fd].device, request, (unsigned long) param);
 }
 
 /*
@@ -83,11 +70,7 @@ int ioctl(int fd, int request, void * param)
  */
 int close(int fd)
 {
-	check_fd(fd);
-	if(files[fd])
-		if(files[fd]->close)
-			return(files[fd]->close());
-	return -1;
+    return driver_close(files[fd].driver, files[fd].bus, files[fd].device);
 }
 
 /*
@@ -97,8 +80,6 @@ void init_files()
 {
 	unsigned long i = 0;
 	for(i = 0; i < file_count; i++){
-		if(files[i])
-			if(files[i]->init)
-				files[i]->init();
+	    driver_init(files[i].driver);
 	}
 }

@@ -7,42 +7,6 @@
 #ifndef __FILE_MANAGER_H__
 #define __FILE_MANAGER_H__
 
-#include "led.h"
-#include "slot.h"
-#include "sys_dc_12v_en.h"
-#include "cpld.h"
-#include "sys_nrtmen_3.h"
-#include "sys_oren.h"
-#include "rtm_ps.h"
-#include "sys_nrtmen_12.h"
-#include "temperature_selector.h"
-#include "temperature.h"
-#include "ttyS.h"
-#include "shelf.h"
-#include "rtm.h"
-#include "remote_board.h"
-#include "eeprom.h"
-
-/*
- * 文件列表
- */
-#define FILE_LIST {&file_ttyS,				\
-					&file_led,				 \
-					&file_slot,				  \
-					&file_sys_dc_12v_en,	   \
-					&file_sys_nrtmen_3,			\
-					&file_sys_oren,				 \
-					FILE_RTM_PS					  \
-					&file_sys_nrtmen_12,		   \
-					DEVICE_TEMPERATURE				\
-					FILE_TEMPERATURE_SELECTOR		 \
-					FILE_SHELF			   		  	  \
-					FILE_REMOTE						   \
-					FILE_RTM							\
-					&file_eeprom,						 \
-					}
-
-
 /*
  * 查询指定驱动的的fd
  * 如果查询到，有的驱动可能会被初始化，所以即使知道fd,也尽量先open一下
