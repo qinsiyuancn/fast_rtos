@@ -1,6 +1,14 @@
 #include "i2c_phy.h"
 
+void i2c_on_recive_char(unsigned int index, unsigned char recv)
+{
 
+}
+
+void i2c_on_send_char()
+{
+
+}
 
 unsigned char i2c_getchar(unsigned int index , unsigned char slave_addr)
 {

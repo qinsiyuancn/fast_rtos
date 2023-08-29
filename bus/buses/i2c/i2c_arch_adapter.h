@@ -1,5 +1,5 @@
-#ifndef __BUS_PHY_H__
-#define __BUS_PHY_H__
+#ifndef __I2C_ARCH_ADAPTER_H__
+#define __I2C_ARCH_ADAPTER_H__
 
 extern unsigned char i2c_getchar(unsigned int index , unsigned char slave_addr);
 

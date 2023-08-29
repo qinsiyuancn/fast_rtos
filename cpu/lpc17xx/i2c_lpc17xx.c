@@ -99,19 +99,19 @@ static int recv_last_data(unsigned char fd, unsigned char state)
 }
 
 static irq_funp const handler_state[0x20] = {
-		/*0x00	由于非法起始或停止条件的出现，在MST或选择的从机模式中将出现总线错误。			 
-		当外部干扰使I2C 模块进入未定义的状态时也出现0x00状态*/							NULL, 	  
-		/*0x08	已发送起始条件*/														send_sla,  
-		/*0x10	已发送重复的起始条件*/													send_sla, 
-		/*0x18	已发送SLA+W，已接收ACK*/												send_data,
-		/*0x20	已发送SLA+W，已接收非ACK*/												stop,
-		/*0x28	已发送I2DAT中的数据字节，已接收ACK*/									send_data,	
-		/*0x30	已发送I2DAT中的数据字节，已接收非ACK*/									stop,
-		/*0x38	在SLA+R/W或数据字节中丢失仲裁，在非ACK位中丢失仲裁*/					release_bus,
-		/*0x40	已发送SLA+R，已接收ACK*/												recv_ready,
-		/*0x48	已发送SLA+R，已接收非ACK*/												stop,
-		/*0x50	已接收数据字节，ACK已返回*/												recv_data,	
-		/*0x58	已接收数据字节，非ACK已返回*/											recv_last_data,
+        /*0x00 由于非法起始或停止条件的出现，在MST或选择的从机模式中将出现总线错误。			 
+            当外部干扰使I2C 模块进入未定义的状态时也出现0x00状态*/  NULL, 	  
+        /*0x08 已发送起始条件*/                                     send_sla,  
+        /*0x10 已发送重复的起始条件*/                               send_sla, 
+        /*0x18 已发送SLA+W，已接收ACK*/                             send_data,
+        /*0x20 已发送SLA+W，已接收非ACK*/                           stop,
+        /*0x28 已发送I2DAT中的数据字节，已接收ACK*/                 send_data,	
+        /*0x30 已发送I2DAT中的数据字节，已接收非ACK*/               stop,
+        /*0x38 在SLA+R/W或数据字节中丢失仲裁，在非ACK位中丢失仲裁*/ release_bus,
+        /*0x40 已发送SLA+R，已接收ACK*/                             recv_ready,
+        /*0x48 已发送SLA+R，已接收非ACK*/                           stop,
+        /*0x50 已接收数据字节，ACK已返回*/                          recv_data,	
+        /*0x58 已接收数据字节，非ACK已返回*/                        recv_last_data,
 };
 
 static unsigned char i2c_work( unsigned char fd )   
@@ -132,8 +132,22 @@ static void I2C_IRQHandler(unsigned char fd)
 		stop(fd, i2c_stat);
 }
 
+static void set_slave(unsigned int fd)
+{
+    
+    i2cs[fd].bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (i2cs[fd].bus->I2ADR0 & 1);//只改地址，不改通用使能位   	
+    i2cs[fd].bus->I2CONSET = I2CONSET_I2EN | I2CONSET_AA;
+}
+
+static void set_master(unsigned int fd)
+{
+
+    i2cs[fd].bus->I2CONSET = I2CONSET_I2EN;
+}
+
 static int i2c_bus_init(unsigned char fd, enum i2c_mode mode)
 {	
+	static void (* const set_mode[])(unsigned int) = {set_slave, set_master};
 	if(fd >= i2c_count())return 1;
  
 	LPC_SC->PCONP |= (1 << i2cs[fd].pconp);
@@ -149,12 +163,7 @@ static int i2c_bus_init(unsigned char fd, enum i2c_mode mode)
           
 	  /* Install interrupt handler */   
 	NVIC_EnableIRQ(I2C0_IRQn + fd);
-	if(mode){
-		i2cs[fd].bus->I2CONSET = I2CONSET_I2EN;
-	}else{
-		i2cs[fd].bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (i2cs[fd].bus->I2ADR0 & 1);//只改地址，不改通用使能位   	
-		i2cs[fd].bus->I2CONSET = I2CONSET_I2EN | I2CONSET_AA;
-	}
+	set_mode[mode](fd);
 	return 0;	
 }
 
