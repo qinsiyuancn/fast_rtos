@@ -12,21 +12,6 @@ unsigned char bus_getchar(unsigned int bus, unsigned int dev){
     return 0;
 }
 
-void bus_setchar(unsigned int bus, unsigned int dev, unsigned char data)
-{
-    if (bus < bus_count)
-        if (bus_list[bus].char_op -> setchar)
-            bus_list[bus].char_op -> setchar(dev, data);
-}
-
-unsigned char bus_set_get_char(unsigned int bus, unsigned int dev, unsigned char data)
-{
-    if (bus < bus_count)
-	if (bus_list[bus].char_op -> set_get_char)
-            return bus_list[bus].char_op -> set_get_char(dev);
-    return 0;
-}
-
 unsigned int bus_send(unsigned int bus, unsigned int dev, const unsigned char * data, unsigned int size)
 {
     if (bus < bus_count)
@@ -51,11 +36,11 @@ unsigned int bus_send_recv(unsigned int bus, unsigned int dev, const unsigned ch
     return 0;
 }
 
-void bus_start(unsigned int bus, unsigned int dev)
+void bus_start(unsigned int bus, unsigned int dev, unsigned char * send_buffer, unsigned int send_size)
 {
     if (bus < bus_count)
         if (bus_list[bus].char_op -> start)
-            bus_list[bus].char_op -> start(bus, dev);
+            bus_list[bus].char_op -> start(bus, dev, send_buffer, send_size);
 }
 void bus_stop(unsigned int bus, unsigned int dev)
 {

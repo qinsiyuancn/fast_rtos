@@ -1,33 +1,38 @@
 #ifndef __I2C_SESSION_H__
 #define __I2C_SESSION_H__
 
-enum i2c_mode{
+#include "bus_session.h"
+
+enum i2c_mode
+{
     slave,
     master
+};
+
+enum state_bit
+{
+    read,
+    write,
+    interrupted,
+    setAck
 };
 
 struct i2c_config
 {
     enum i2c_mode mode;
 }
-struct i2c_ctrler
-{
-    Semaphore sem;
-};
-
-struct i2c_buffer
-{
-    unsigned int size;
-    unsigned int current;
-    unsigned char * buffer;
-    unsigned char [0xff] default_buffer;
-};
 
 struct i2c_session
 {
-    const struct i2c_config config;
-    struct i2c_ctrler ctrler;
-    struct i2c_buffer buffer;
+    const struct config config;
+    struct bus_session session;
+    unsigned char address;
+    unsigned char state_bitmap;
+    unsigned char buffer_default[0xff];
 };
+
+#define getbit(bitmap, index) ((bitmap >> index) & 0x1)
+#define setbit(bitmap, index) bitmap |= (0x1 << index)
+#define clrbit(bitmap, index, vaild) bitmap &= ((~(0x1 << index)) & ((0x1 << vaild) - 1))
 
 #endif

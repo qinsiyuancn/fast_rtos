@@ -13,7 +13,7 @@ static struct {
     struct i2c_session session;
 } bus[] = I2C_A;
 
-static unsigned int I2CStop( unsigned char fd ) 
+static unsigned int bus_stop( unsigned char fd ) 
 {
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_STO;  /* Set Stop flag */
     bus[fd].i2cs.bus->I2CONCLR = I2CONCLR_SIC;  /* Clear SI flag */
@@ -35,6 +35,18 @@ static int set_ack(unsigned char fd)
     return 0;
 }
 
+static unsigned int stop(unsigned char fd, unsigned char state)
+{
+    if(fd < i2c_count())
+        if(!bus_stop(fd)) {
+            bus[fd].session.session.recv.buffer = NULL;
+            bus[fd].session.session.recv.size = 0;
+            bus[fd].session.session.send.buffer = NULL;
+            bus[fd].session.session.send.size = 0;
+	    unlock(bus[fd].session.session.ctrl.usingbus);
+        }
+    return 1;
+}
 
 static int set_nack(unsigned char fd)
 {
@@ -104,26 +116,32 @@ static unsigned int start(unsigned char fd)
     return 0;
 }
 
-unsigned int i2c_start(unsigned char fd )
+unsigned int i2c_send(unsigned char fd, unsigned char slave, unsigned char * data, unsigned int size)
 {
     if(fd >= i2c_count())return 1;
-    bus[fd].session.buffer.buffer = bus[fd].session.buffer.default_buffer;
-    bus[fd].session.buffer.current = 0;
-    bus[fd].session.buffer.size = 0;
-    return start(fd);
+
+    start(fd);
+    return 0;
 }
 
-unsigned int i2c_stop(unsigned char fd, unsigned char state)
+unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
 {
-    // i2c_base_transport_finish(i2c_bus_manager, fd);
-//    clear_sic(fd,state);
-    if(fd < i2c_count())
-        if(!stop(fd)) {
-            bus[fd].session.buffer.buffer = NULL;
-            bus[fd].session.buffer.current = 0;
-            bus[fd].session.buffer.size = 0;
-        }
-    return 1;
+    if(fd >= i2c_count())return 1;
+    if(!send_size) return 2;
+    if(!send_buffer)return 3;
+    lock(bus[fd].session.session.ctrl.usingbus);
+    bus[fd].session.session.send.buffer = send_buffer;
+    bus[fd].session.session.send.size = send_size;
+    if(bus[fd].session.session.recv.buffer && recv_size){
+        bus[fd].session.session.recv.buffer = recv_buffer;
+	bus[fd].session.session.recv.size = recv_size;
+    }else{
+        bus[fd].session.session.recv.buffer = bus[fd].session.default_buffer;
+	bus[fd].session.session.recv.size = sizeof(bus[fd].session.default_buffer) / sizeof(bus[fd].session.default_buffer[0]);
+    }
+    bus[fd].session.address = addr;
+    bus[fd].session.setAck = 1;
+    return start(fd);
 }
 
 void I2C_IRQHandler(unsigned char fd)
@@ -144,9 +162,9 @@ void I2C_IRQHandler(unsigned char fd)
         /*0x58 已接收数据字节，非ACK已返回*/                        recv_last_data,
     };
 
-    const unsigned i2c_stat = bus[fd].i2cs.bus->I2STAT;
-    if(handler_state[ i2c_stat >> 3])
-        handler_state[ i2c_stat >> 3 ](fd, i2c_stat);
+    const unsigned state = (bus[fd].i2cs.bus->I2STAT) >> 3;
+    if(handler_state[ state ])
+        handler_state[ state ](fd, stat);
     else
         stop(fd, i2c_stat);
 }

@@ -20,14 +20,14 @@ static void stop(unsigned int dev)
 static unsigned char getchar(unsigned int dev)
 {
     if(dev < dev_size)
-        return i2c_getchar(device_list[dev].bus_index, device_list[dev].slave_addr);
+        return i2c_getchar(device_list[dev].bus_index);
     return 0;
 }
 
 static void setchar(unsigned int dev, unsigned char data)
 {
     if(dev < dev_size)
-        i2c_setchar(device_list[dev].bus_index, device_list[dev].slave_addr, data);
+        i2c_setchar(device_list[dev].bus_index);
 }
 
 static unsigned char set_get_char(unsigned int dev, unsigned char data)
