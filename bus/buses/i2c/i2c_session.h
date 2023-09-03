@@ -11,8 +11,8 @@ enum i2c_mode
 
 enum state_bit
 {
-    read,
     write,
+    read,
     interrupted,
     setAck
 };

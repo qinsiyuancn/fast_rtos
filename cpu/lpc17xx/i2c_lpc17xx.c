@@ -116,11 +116,17 @@ static unsigned int start(unsigned char fd)
     return 0;
 }
 
-unsigned int i2c_send(unsigned char fd, unsigned char slave, unsigned char * data, unsigned int size)
+unsigned int i2c_send(unsigned char fd, unsigned char * data, unsigned int size)
 {
     if(fd >= i2c_count())return 1;
-
+    lock(bus[fd].session.session.ctrl.usingbus);
+    bus[fd].session.session.send.buffer = data;
+    bus[fd].session.session.send.size = size;
+    bus[fd].session.address = addr;
+    setbit(bus[fd].session.state_bitmap, setAck);
+    setbit(bus[fd].session.state_bitmap, write);
     start(fd);
+    wait(bus[fd].session.session.ctrl.finish);
     return 0;
 }
 
@@ -147,6 +153,7 @@ unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * sen
     }
     bus[fd].session.address = addr;
     setbit(bus[fd].session.state_bitmap, setAck);
+    setbit(bus[fd].session.state_bitmap, read);
     return start(fd);
 }
 
