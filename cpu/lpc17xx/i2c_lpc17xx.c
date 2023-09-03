@@ -38,7 +38,7 @@ static int set_ack(unsigned char fd)
 static unsigned int stop(unsigned char fd, unsigned char state)
 {
     if(fd < i2c_count())
-        if(!bus_stop(fd)) {
+        if(bus_stop(fd)) {
             bus[fd].session.session.recv.buffer = NULL;
             bus[fd].session.session.recv.size = 0;
             bus[fd].session.session.send.buffer = NULL;
@@ -124,6 +124,12 @@ unsigned int i2c_send(unsigned char fd, unsigned char slave, unsigned char * dat
     return 0;
 }
 
+unsigned int i2c_stop(unsigned char fd)
+{
+    if(fd >= i2c_count())return 1;
+    clrbit(bus[fd].session.state_bitmap, setAck);
+}
+
 unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
 {
     if(fd >= i2c_count())return 1;
@@ -140,7 +146,7 @@ unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * sen
 	bus[fd].session.session.recv.size = sizeof(bus[fd].session.default_buffer) / sizeof(bus[fd].session.default_buffer[0]);
     }
     bus[fd].session.address = addr;
-    bus[fd].session.setAck = 1;
+    setbit(bus[fd].session.state_bitmap, setAck);
     return start(fd);
 }
 
