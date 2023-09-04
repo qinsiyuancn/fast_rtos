@@ -132,11 +132,35 @@ static unsigned int start(unsigned char fd)
     return 0;
 }
 
+unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char * send_data, unsigned int send_size, unsigned char recv_data, unsigned int recv_size)
+{
+    if (fd < i2c_count) {
+        if (send_data && send_size && recv_data && recv_size) {
+            os_lock(bus[fd].session.session.ctrl.usingbus);
+            bus[fd].session.session.send.buffer = send_buffer;
+            bus[fd].session.session.send.size = send_size;
+            setbit(bus[fd].session.state_bitmap, write);
+
+            bus[fd].session.session.recv.buffer = recv_buffer;
+	    bus[fd].session.session.recv.size = recv_size;
+            setbit(bus[fd].session.state_bitmap, read);
+
+            bus[fd].session.address = addr;
+            bus[fd].session.current = 0;
+            recv_size < 2 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
+            start(fd);
+            os_wait(bus[fd].session.session.ctrl.finish);
+	}
+	return 2;
+    }
+    return 1;
+}
+
 unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data, unsigned int size)
 {
     if(fd < i2c_count()) {
         if(data && size){
-            lock(bus[fd].session.session.ctrl.usingbus);
+            os_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.recv.buffer = data;
             bus[fd].session.session.recv.size = size;
             bus[fd].session.address = addr;
@@ -156,7 +180,7 @@ unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char 
 {
     if(fd < i2c_count()){
         if (data && size) {
-            lock(bus[fd].session.session.ctrl.usingbus);
+            os_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.send.buffer = data;
             bus[fd].session.session.send.size = size;
             bus[fd].session.address = addr;
@@ -197,7 +221,7 @@ unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * sen
     }
     bus[fd].session.address = addr;
     bus[fd].session.current = 0;
-    size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
+    recv_size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
     setbit(bus[fd].session.state_bitmap, read);
     return start(fd);
 }
