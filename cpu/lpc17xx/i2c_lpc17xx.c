@@ -5,6 +5,7 @@
  * i2c与cpu相关部分驱动
  */
 #include "i2c_lpc17xx.h"
+#include "i2c_bus.h"
 
 #if CPU_lpc17xx
 // static const struct i2c_s i2cs[] = I2C_A;
@@ -131,7 +132,7 @@ static unsigned int start(unsigned char fd)
     return 0;
 }
 
-unsigned char getchar(unsigned char fd)
+unsigned char i2c_getchar(unsigned char fd)
 {
     unsigned int current = 0;
     unsigned int count = 0;
@@ -269,7 +270,8 @@ void I2C_IRQHandler(unsigned char fd)
 
 static void set_mode_slave(unsigned int fd)
 {
-    bus[fd].i2cs.bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (bus[fd].i2cs.bus->I2ADR0 & 1);//只改地址，不改通用使能位
+    //bus[fd].i2cs.bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (bus[fd].i2cs.bus->I2ADR0 & 1);//只改地址，不改通用使能位
+    bus[fd].i2cs.bus->I2ADR0 = bus[fd].session.address << 1 | (bus[fd].i2cs.bus->I2ADR0 & 1);//只改地址，不改通用使能位
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN | I2CONSET_AA;
 }
 

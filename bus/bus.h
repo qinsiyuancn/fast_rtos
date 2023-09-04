@@ -2,8 +2,8 @@
 #define __BUS_H__
 
 struct char_bus {
-    void (*const read_start)(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);
-    void (*const read_stop) (unsigned int dev);
+    unsigned int (*const read_start)(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);
+    unsigned int (*const read_stop) (unsigned int dev);
     unsigned char (* const getchar)(unsigned int dev);
 };
 

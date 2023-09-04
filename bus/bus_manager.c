@@ -36,16 +36,18 @@ unsigned int bus_send_recv(unsigned int bus, unsigned int dev, const unsigned ch
     return 0;
 }
 
-void bus_start(unsigned int bus, unsigned int dev, unsigned char * send_buffer, unsigned int send_size)
+unsigned int bus_start(unsigned int bus, unsigned int dev, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
 {
     if (bus < bus_count)
         if (bus_list[bus].char_op -> start)
-            bus_list[bus].char_op -> start(bus, dev, send_buffer, send_size);
+            return bus_list[bus].char_op -> start(bus, dev, send_buffer, send_size, recv_buffer, recv_size);
+    return 1;
 }
-void bus_stop(unsigned int bus, unsigned int dev)
+unsigned int bus_stop(unsigned int bus, unsigned int dev)
 {
     if (bus < bus_count)
         if (bus_list[bus].char_op -> stop)
-            bus_list[bus].char_op -> stop(bus, dev);
+            return bus_list[bus].char_op -> stop(bus, dev);
+    return 1;
 }
 

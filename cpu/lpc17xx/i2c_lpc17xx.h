@@ -7,9 +7,9 @@
  #ifndef __I2C_LPC1764_H__
  #define __I2C_LPC1764_H__
 
-#include "board_manager.h"
+// #include "board_manager.h"
     #if CPU_lpc17xx
-    #include "i2c_bus.h"
+ //   #include "i2c_bus.h"
 
     #define I2CONSET_I2EN    0x00000040  /* I2C Control Set Register */
     #define I2CONSET_AA	     0x00000004
@@ -44,6 +44,6 @@
         } pin;
     };
     #define i2c_count() (sizeof(i2cs)/sizeof(i2cs[0]))
-    extern const struct i2c_manager_s * const i2c_bus_manager;
+//    extern const struct i2c_manager_s * const i2c_bus_manager;
     #endif
 #endif
