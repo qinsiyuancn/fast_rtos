@@ -36,7 +36,7 @@ static unsigned int stop(unsigned char fd, unsigned char state)
             bus[fd].session.session.recv.size = 0;
             bus[fd].session.session.send.buffer = NULL;
             bus[fd].session.session.send.size = 0;
-	    os_post();
+	    os_post(bus[fd].session.session.ctrl.finish);
 	    os_unlock(bus[fd].session.session.ctrl.usingbus);
         }
     return 1;
@@ -54,24 +54,31 @@ static int set_nack(unsigned char fd)
     return 0;
 }
 
-static int send_sla(unsigned char fd, unsigned char state)
+static int send_slave_addr(unsigned char fd, unsigned char state)
 {
 	/* A Start condition is issued. */
-    bus[fd].i2cs.bus->I2DAT = i2c_base_get_addr(i2c_bus_manager, fd);
+    bus[fd].i2cs.bus->I2DAT = bus[fd].session.address << 1 | getbit(bus[fd].session.state_bitmap, read) ;
     bus[fd].i2cs.bus->I2CONCLR = (I2CONCLR_SIC | I2CONCLR_STAC);
     return 0;
 }
 
 static int send_data(unsigned char fd, unsigned char state)
 {
-    if(bus[fd].session.session.send.size > bus[fd].session.current){
+    static restart
+    if (bus[fd].session.session.send.size > bus[fd].session.current) {
 //    i2c_base_transport_finish(i2c_bus_manager, fd);
 //    I2CStop(fd);
         bus[fd].i2cs.bus->I2DAT = bus[fd].session.session.send.buffer[current++];
         clear_sic(fd);
         return 0;
     }
-    stop(fd, state);
+    clrbit(bus[fd].session.state_bitmap, write);
+    if(getbit(bus[fd].session.state_bitmap, read)) {
+        start(fd);
+    }
+    else
+        stop(fd, state);
+
     return 1;
 }
 
@@ -90,7 +97,7 @@ static int recv_ready(unsigned char fd, unsigned char state)
         set_ack(fd);
     }
     return 0;*/
-    ack_set_list[getbit(fd, ack)](fd);
+    ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
 }
 
 static int recv_data(unsigned char fd, unsigned char state)
@@ -103,7 +110,7 @@ static int recv_data(unsigned char fd, unsigned char state)
     }
     */
     bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
-    ack_set_list[getbit(fd, ack)](fd);
+    ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
     if (bus[fd].session.current == 2)
         clrbit(fd, ack);
     return 0;
@@ -111,7 +118,7 @@ static int recv_data(unsigned char fd, unsigned char state)
 static int recv_last_data(unsigned char fd, unsigned char state)
 {
     // i2c_base_recv_char(i2c_bus_manager, fd, bus[fd]i2cs.bus->I2DAT);
-    bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
+    bus[fd].session.session.recv.buffer[bus[fd].session.current] = bus[fd]i2cs.bus->I2DAT;
     stop(fd, state);
     return 0;
 }
@@ -200,8 +207,8 @@ void I2C_IRQHandler(unsigned char fd)
     static irq_funp const handler_state[0x20] = {
         /*0x00 由于非法起始或停止条件的出现，在MST或选择的从机模式中将出现总线错误。			 
             当外部干扰使I2C 模块进入未定义的状态时也出现0x00状态*/  NULL, 	  
-        /*0x08 已发送起始条件*/                                     send_sla,  
-        /*0x10 已发送重复的起始条件*/                               send_sla, 
+        /*0x08 已发送起始条件*/                                     send_slave_addr,  
+        /*0x10 已发送重复的起始条件*/                               send_slave_addr, 
         /*0x18 已发送SLA+W，已接收ACK*/                             send_data,
         /*0x20 已发送SLA+W，已接收非ACK*/                           stop,
         /*0x28 已发送I2DAT中的数据字节，已接收ACK*/                 send_data,	
@@ -220,20 +227,20 @@ void I2C_IRQHandler(unsigned char fd)
         stop(fd, i2c_stat);
 }
 
-static void set_slave(unsigned int fd)
+static void set_mode_slave(unsigned int fd)
 {
     bus[fd].i2cs.bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (bus[fd].i2cs.bus->I2ADR0 & 1);//只改地址，不改通用使能位
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN | I2CONSET_AA;
 }
 
-static void set_master(unsigned int fd)
+static void set_mode_master(unsigned int fd)
 {
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN;
 }
 
 int i2c_bus_init(unsigned char fd)
 {
-    static void (* const set_mode[])(unsigned int) = {set_slave, set_master};
+    static void (* const set_mode[])(unsigned int) = {set_mode_slave, set_mode_master};
 
     if(fd >= i2c_count())return 1;
 
