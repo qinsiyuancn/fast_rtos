@@ -36,8 +36,8 @@ static unsigned int stop(unsigned char fd, unsigned char state)
             bus[fd].session.session.recv.size = 0;
             bus[fd].session.session.send.buffer = NULL;
             bus[fd].session.session.send.size = 0;
-	    os_post(bus[fd].session.session.ctrl.finish);
-	    os_unlock(bus[fd].session.session.ctrl.usingbus);
+	    os_sem_post(bus[fd].session.session.ctrl.finish);
+	    os_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
         }
     return 1;
 }
@@ -64,7 +64,6 @@ static int send_slave_addr(unsigned char fd, unsigned char state)
 
 static int send_data(unsigned char fd, unsigned char state)
 {
-    static restart
     if (bus[fd].session.session.send.size > bus[fd].session.current) {
 //    i2c_base_transport_finish(i2c_bus_manager, fd);
 //    I2CStop(fd);
@@ -75,10 +74,9 @@ static int send_data(unsigned char fd, unsigned char state)
     clrbit(bus[fd].session.state_bitmap, write);
     if(getbit(bus[fd].session.state_bitmap, read)) {
         start(fd);
-    }
-    else
+    } else {
         stop(fd, state);
-
+    }
     return 1;
 }
 
@@ -111,6 +109,7 @@ static int recv_data(unsigned char fd, unsigned char state)
     */
     bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
     ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
+    if(os_sem_enable(queue_size))os_sem_post(queue_size);
     if (bus[fd].session.current == 2)
         clrbit(fd, ack);
     return 0;
@@ -132,11 +131,27 @@ static unsigned int start(unsigned char fd)
     return 0;
 }
 
+unsigned char getchar(unsigned char fd)
+{
+    unsigned int current = 0;
+    unsigned int count = 0;
+    if (fd < i2c_count) {
+        os_sem_wait(queue_size);
+        do{
+	    clrbit(bus[fd].session.state_bitmap, interrupted);
+            current = bus[fd].session.current;
+	    os_get_count(count, queue_size);
+	}while(getbit(bus[fd].session.state_bitmap, interrupted));
+	return bus[fd].session.session.recv.buffer[current - count - 1];
+    }
+    return 0;
+}
+
 unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char * send_data, unsigned int send_size, unsigned char recv_data, unsigned int recv_size)
 {
     if (fd < i2c_count) {
         if (send_data && send_size && recv_data && recv_size) {
-            os_lock(bus[fd].session.session.ctrl.usingbus);
+            os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.send.buffer = send_buffer;
             bus[fd].session.session.send.size = send_size;
             setbit(bus[fd].session.state_bitmap, write);
@@ -149,7 +164,7 @@ unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char *
             bus[fd].session.current = 0;
             recv_size < 2 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
             start(fd);
-            os_wait(bus[fd].session.session.ctrl.finish);
+            os_sem_wait(bus[fd].session.session.ctrl.finish);
 	}
 	return 2;
     }
@@ -160,7 +175,7 @@ unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data
 {
     if(fd < i2c_count()) {
         if(data && size){
-            os_lock(bus[fd].session.session.ctrl.usingbus);
+            os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.recv.buffer = data;
             bus[fd].session.session.recv.size = size;
             bus[fd].session.address = addr;
@@ -168,7 +183,7 @@ unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data
             setbit(bus[fd].session.state_bitmap, read);
             bus[fd].session.current = 0;
             start(fd);
-            os_wait(bus[fd].session.session.ctrl.finish);
+            os_sem_wait(bus[fd].session.session.ctrl.finish);
             return 0;
         }
         return 2;
@@ -180,7 +195,7 @@ unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char 
 {
     if(fd < i2c_count()){
         if (data && size) {
-            os_lock(bus[fd].session.session.ctrl.usingbus);
+            os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.send.buffer = data;
             bus[fd].session.session.send.size = size;
             bus[fd].session.address = addr;
@@ -188,7 +203,7 @@ unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char 
             setbit(bus[fd].session.state_bitmap, write);
             bus[fd].session.current = 0;
             start(fd);
-            os_wait(bus[fd].session.session.ctrl.finish);
+            os_sem_wait(bus[fd].session.session.ctrl.finish);
             return 0;
         }
         return 2;
@@ -206,7 +221,7 @@ unsigned int i2c_stop(unsigned char fd)
 unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
 {
     if(fd >= i2c_count())return 1;
-    os_lock(bus[fd].session.session.ctrl.usingbus);
+    os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
     if(send_buffer && send_size){
         bus[fd].session.session.send.buffer = send_buffer;
         bus[fd].session.session.send.size = send_size;
@@ -223,6 +238,7 @@ unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * sen
     bus[fd].session.current = 0;
     recv_size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
     setbit(bus[fd].session.state_bitmap, read);
+    os_sem_init(queue_size);
     return start(fd);
 }
 

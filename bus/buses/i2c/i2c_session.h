@@ -30,6 +30,7 @@ struct i2c_session
     unsigned char state_bitmap;
     unsigned char buffer_default[0xff];
     unsigned int current;
+    Semaphore queue_size;
 };
 
 #define getbit(bitmap, index) ((bitmap >> index) & 0x1)
