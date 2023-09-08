@@ -65,7 +65,7 @@ static int send_slave_addr(unsigned char fd, unsigned char state)
 
 static int send_data(unsigned char fd, unsigned char state)
 {
-    if (bus[fd].session.session.send.size > bus[fd].session.current) {
+    if (bus[fd].session.session.send.buffer && (bus[fd].session.session.send.size > bus[fd].session.current)) {
 //    i2c_base_transport_finish(i2c_bus_manager, fd);
 //    I2CStop(fd);
         bus[fd].i2cs.bus->I2DAT = bus[fd].session.session.send.buffer[current++];
@@ -108,17 +108,21 @@ static int recv_data(unsigned char fd, unsigned char state)
         set_ack(fd);
     }
     */
-    bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
+    if (bus[fd].session.session.recv.buffer) {
+        bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
+        if(os_sem_enable(queue_size))os_sem_post(queue_size);
+        if (bus[fd].session.current == 2)
+            clrbit(fd, ack);
+    }
     ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
-    if(os_sem_enable(queue_size))os_sem_post(queue_size);
-    if (bus[fd].session.current == 2)
-        clrbit(fd, ack);
     return 0;
 }
 static int recv_last_data(unsigned char fd, unsigned char state)
 {
     // i2c_base_recv_char(i2c_bus_manager, fd, bus[fd]i2cs.bus->I2DAT);
-    bus[fd].session.session.recv.buffer[bus[fd].session.current] = bus[fd]i2cs.bus->I2DAT;
+    if (bus[fd].session.session.recv.buffer) {
+        bus[fd].session.session.recv.buffer[bus[fd].session.current] = bus[fd]i2cs.bus->I2DAT;
+    }
     stop(fd, state);
     return 0;
 }

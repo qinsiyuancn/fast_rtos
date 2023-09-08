@@ -5,7 +5,8 @@
 
 static const struct bus* const bus_list[] = BUS_LIST;
 
-unsigned char bus_getchar(unsigned int bus, unsigned int dev){
+unsigned char bus_getchar(unsigned int bus, unsigned int dev)
+{
     if (bus < bus_count)
 	if (bus_list[bus].char_op -> getchar)
             return bus_list[bus].char_op -> getchar(dev);
