@@ -1043,11 +1043,15 @@ __FILE_H__	file/file.h	9;"	d
 __FILE_MANAGER_H__	file/file_manager.h	8;"	d
 __FILE_SERVICE_H__	file/file_service.h	11;"	d
 __GPIO_BUS_H__	bus/buses.bak/gpio_bus.h	8;"	d
+__GPIO_CPU_H__	bus/buses/gpio/gpio_cpu.h	2;"	d
+__GPIO_DEVICE_H__	bus/buses/gpio/gpio_dev.h	2;"	d
 __GPIO_H	bus/buses.bak/gpio.h	2;"	d
+__GPIO_H__	bus/buses/gpio/gpio.h	2;"	d
 __GPIO_LPC17XX_H__	cpu/lpc17xx/gpio_lpc17xx.h	2;"	d
-__I2C_ARCH_ADAPTER_H__	bus/buses/i2c/i2c_arch_adapter.h	2;"	d
+__GPIO_SESSION_H__	bus/buses/gpio/gpio_session.h	2;"	d
 __I2C_BASE_H__	bus/buses.bak/i2c_base.h	6;"	d
 __I2C_BUS_H__	bus/buses.bak/i2c_bus.h	9;"	d
+__I2C_CPU_H__	bus/buses/i2c/i2c_cpu.h	2;"	d
 __I2C_DEVICE_H__	bus/buses/i2c/i2c_dev.h	2;"	d
 __I2C_H__	bus/buses.bak/i2c.h	8;"	d
 __I2C_H__	bus/buses/i2c/i2c.h	2;"	d
@@ -1098,6 +1102,8 @@ __Vendor_SysTickConfig	cpu/lpc17xx/LPC17xx.h	93;"	d
 __cpld_h__	inode/driver/cpld.h	8;"	d
 ack_set_list	cpu/lpc17xx/i2c_lpc17xx.c	/^static int (* const ack_set_list[])(unsigned char) = {set_nack, set_ack};$/;"	v	file:
 addr_rw	bus/buses.bak/i2c.h	/^			unsigned char addr_rw;\/\/丛地址，主模式时表示对方地址，从模式时表示自己的地址$/;"	m	struct:i2c_session::__anon4
+address	bus/buses/gpio/gpio_dev.h	/^        unsigned char * const address;$/;"	m	struct:gpio_device
+address	bus/buses/gpio/gpio_session.h	/^    unsigned char address;$/;"	m	struct:gpio_session
 address	bus/buses/i2c/i2c_session.h	/^    unsigned char address;$/;"	m	struct:i2c_session
 aio	bus/buses.bak/uart.c	/^	calc_queue * aio;$/;"	m	struct:uart_sessor_s	file:
 board_operation	APP/service/service_board.c	/^ int board_operation(unsigned char slot, unsigned char operation)$/;"	f
@@ -1105,12 +1111,14 @@ board_power_off	APP/service/service_board.c	/^ int board_power_off(unsigned char
 board_power_on	APP/service/service_board.c	/^ int board_power_on(unsigned char slot)$/;"	f
 buffer	algorithm/buffer.h	/^    const unsigned char * buffer;$/;"	m	struct:buffer_send
 buffer	algorithm/buffer.h	/^    unsigned char * buffer;$/;"	m	struct:buffer_recv
+buffer_default	bus/buses/gpio/gpio_session.h	/^    unsigned char buffer_default[0xff];$/;"	m	struct:gpio_session
 buffer_default	bus/buses/i2c/i2c_session.h	/^    unsigned char buffer_default[0xff];$/;"	m	struct:i2c_session
 buffer_io	bus/buses.bak/i2c.h	/^			}buffer_io;$/;"	m	struct:i2c_session::__anon4	typeref:union:i2c_session::__anon4::__anon5
 buffer_recv	algorithm/buffer.h	/^struct buffer_recv$/;"	s
 buffer_send	algorithm/buffer.h	/^struct buffer_send$/;"	s
 bus	bus/bus.h	/^struct bus$/;"	s
-bus	bus/buses/i2c/i2c.c	/^static const struct bus bus = {"i2c", {start, stop, getchar, setchar, set_get_char}, {send, recv, send_recv}};$/;"	v	typeref:struct:bus	file:
+bus	bus/buses/gpio/gpio.c	/^static const struct bus bus = {"gpio", {start, stop, getchar}, {send, recv, send_recv}};$/;"	v	typeref:struct:bus	file:
+bus	bus/buses/i2c/i2c.c	/^static const struct bus bus = {"i2c", {start, stop, getchar}, {send, recv, send_recv}};$/;"	v	typeref:struct:bus	file:
 bus	cpu/lpc17xx/i2c_lpc17xx.c	/^} bus[] = I2C_A;$/;"	v	typeref:struct:__anon8	file:
 bus	cpu/lpc17xx/i2c_lpc17xx.h	/^        LPC_I2C_TypeDef * const bus;$/;"	m	struct:i2c_s
 bus	file/file.h	/^    const unsigned int bus;$/;"	m	struct:file
@@ -1118,7 +1126,7 @@ bus_count	bus/bus_manager.c	4;"	d	file:
 bus_count	bus/char/char_bus_manager.c	4;"	d	file:
 bus_count	bus/string/string_bus_manager.c	4;"	d	file:
 bus_ctrler	bus/bus_ctrl.h	/^struct bus_ctrler$/;"	s
-bus_getchar	bus/bus_manager.c	/^unsigned char bus_getchar(unsigned int bus, unsigned int dev){$/;"	f
+bus_getchar	bus/bus_manager.c	/^unsigned char bus_getchar(unsigned int bus, unsigned int dev)$/;"	f
 bus_index	bus/buses/i2c/i2c_dev.h	/^        const unsigned int bus_index;$/;"	m	struct:i2c_device
 bus_init	bus/buses.bak/gpio_bus.h	/^	void (*bus_init)(void);$/;"	m	struct:gpio_manager_s
 bus_init	bus/buses.bak/i2c_bus.h	/^	int (*bus_init)(unsigned char fd, enum i2c_mode mode);$/;"	m	struct:i2c_manager_s
@@ -1131,8 +1139,8 @@ bus_register	cpu/lpc17xx/uart_lpc17xx.c	/^	LPC_UART_TypeDef * const bus_register
 bus_send	bus/bus_manager.c	/^unsigned int bus_send(unsigned int bus, unsigned int dev, const unsigned char * data, unsigned int size)$/;"	f
 bus_send_recv	bus/bus_manager.c	/^unsigned int bus_send_recv(unsigned int bus, unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size)$/;"	f
 bus_session	bus/bus_session.h	/^struct bus_session$/;"	s
-bus_start	bus/bus_manager.c	/^void bus_start(unsigned int bus, unsigned int dev, unsigned char * send_buffer, unsigned int send_size)$/;"	f
-bus_stop	bus/bus_manager.c	/^void bus_stop(unsigned int bus, unsigned int dev)$/;"	f
+bus_start	bus/bus_manager.c	/^unsigned int bus_start(unsigned int bus, unsigned int dev, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)$/;"	f
+bus_stop	bus/bus_manager.c	/^unsigned int bus_stop(unsigned int bus, unsigned int dev)$/;"	f
 bus_stop	cpu/lpc17xx/i2c_lpc17xx.c	/^static unsigned int bus_stop( unsigned char fd ) $/;"	f	file:
 calc_queue	algorithm/algorithm_queue.h	/^ } calc_queue;$/;"	t	typeref:struct:__anon1
 cdev	inode/driver/temperature_tmc435.c	/^static unsigned char cdev = 0;$/;"	v	file:
@@ -1150,7 +1158,9 @@ close	file/file_manager.c	/^int close(int fd)$/;"	f
 close	inode/driver.h	/^	int (*close)(unsigned int bus, unsigned int dev);$/;"	m	struct:file_operation
 clr_data	bus/map_register/gpio/gpio.c	/^void clr_data(unsigned int dev, unsigned char data)$/;"	f
 clr_data	bus/map_register/map_register.h	/^    void (*const clr_data)(unsigned int bus, unsigned int dev, unsigned char data);$/;"	m	struct:map_register
-clrbit	bus/buses/i2c/i2c_session.h	37;"	d
+clrbit	bus/buses/gpio/gpio_session.h	32;"	d
+clrbit	bus/buses/i2c/i2c_session.h	38;"	d
+config	bus/buses/gpio/gpio_session.h	/^    const struct config config;$/;"	m	struct:gpio_session	typeref:struct:gpio_session::config
 config	bus/buses/i2c/i2c_session.h	/^    const struct config config;$/;"	m	struct:i2c_session	typeref:struct:i2c_session::config
 controller	task/tasks/controller.c	/^const struct Task * const controller = &task;/;"	v
 controller	task/tasks/controller.c	/^static  void  controller (void *p_arg)$/;"	f	file:
@@ -1169,10 +1179,13 @@ crc8_table	inode/driver/shelf.c	/^ static const unsigned char crc8_table[256] = 
 cs_sscanf	algorithm/i_a_change.c	/^ unsigned int cs_sscanf(const char * str){$/;"	f
 ctrl	bus/bus_session.h	/^    struct bus_ctrler ctrl;$/;"	m	struct:bus_session	typeref:struct:bus_session::bus_ctrler
 ctrler	bus/buses.bak/i2c.h	/^		}ctrler;\/\/控制描述$/;"	m	struct:i2c_session	typeref:struct:i2c_session::__anon6
+current	bus/buses/gpio/gpio_session.h	/^    unsigned int current;$/;"	m	struct:gpio_session
 current	bus/buses/i2c/i2c_session.h	/^    unsigned int current;$/;"	m	struct:i2c_session
 delay	APP/service/service_eeprom.c	/^static const struct clock delay = {0,0,0,100};$/;"	v	typeref:struct:clock	file:
+dev_size	bus/buses/gpio/gpio.c	4;"	d	file:
 dev_size	bus/buses/i2c/i2c.c	4;"	d	file:
 device	file/file.h	/^    const unsigned int device;$/;"	m	struct:file
+device_list	bus/buses/gpio/gpio.c	/^static  struct gpio_device device_list[] = I2C_DEV_LIST;$/;"	v	typeref:struct:gpio_device	file:
 device_list	bus/buses/i2c/i2c.c	/^static  struct i2c_device device_list[] = I2C_DEV_LIST;$/;"	v	typeref:struct:i2c_device	file:
 do_sth	bus/buses.bak/bus_type.h	/^	 typedef void (*do_sth)(unsigned char);$/;"	t
 driver	file/file.h	/^    const unsigned int driver;$/;"	m	struct:file
@@ -1246,17 +1259,23 @@ get_uart_callback_funp	bus/buses.bak/uart_base.h	/^	typedef const struct uart_ca
 get_uchar_message	bus/buses.bak/bus_type.h	/^	 typedef unsigned char (*get_uchar_message)(unsigned char);$/;"	t
 get_value	bus/buses.bak/gpio_bus.h	/^	unsigned int (*get_value)(unsigned char , unsigned int);$/;"	m	struct:gpio_manager_s
 get_version	APP/service/service_soft.c	/^ int get_version(char *msg)$/;"	f
-getbit	bus/buses/i2c/i2c_session.h	35;"	d
+getbit	bus/buses/gpio/gpio_session.h	30;"	d
+getbit	bus/buses/i2c/i2c_session.h	36;"	d
 getchar	bus/bus.h	/^    unsigned char (* const getchar)(unsigned int dev);$/;"	m	struct:char_bus
+getchar	bus/buses/gpio/gpio.c	/^static unsigned char getchar(unsigned int dev)$/;"	f	file:
 getchar	bus/buses/i2c/i2c.c	/^static unsigned char getchar(unsigned int dev)$/;"	f	file:
 getchar	bus/char/char_bus.h	/^    unsigned char (* const getchar)(unsigned int dev);$/;"	m	struct:char_bus
 getchar	bus/string/string_bus.h	/^    unsigned char (* const getchar)(unsigned int dev);$/;"	m	struct:string_bus
 getdata	file/file_service.c	/^ int getdata(const char * file_name, void * buffer, unsigned long size){$/;"	f
+gpio	bus/buses/gpio/gpio.c	/^const struct bus * const gpio = &bus;$/;"	v
 gpio_IRQHandler	cpu/lpc17xx/gpio_lpc17xx.c	/^static void gpio_IRQHandler()$/;"	f	file:
+gpio_config	bus/buses/gpio/gpio_session.h	/^struct gpio_config$/;"	s
+gpio_device	bus/buses/gpio/gpio_dev.h	/^    struct gpio_device{$/;"	s
 gpio_init	bus/buses.bak/gpio.c	/^void gpio_init()$/;"	f
 gpio_manager	cpu/lpc17xx/gpio_lpc17xx.c	/^const struct gpio_manager_s gpio_manager = {GpioIntInit, get_gpio, set_gpio_off, set_gpio_on, gpio_IRQHandler};$/;"	v	typeref:struct:gpio_manager_s
 gpio_manager_s	bus/buses.bak/gpio_bus.h	/^  struct gpio_manager_s{$/;"	s
 gpio_s	cpu/lpc17xx/gpio_lpc17xx.c	/^static LPC_GPIO_TypeDef * gpio_s [] = GPIO_A;$/;"	v	file:
+gpio_session	bus/buses/gpio/gpio_session.h	/^struct gpio_session$/;"	s
 h	file/file_service.h	/^		INT8U h;$/;"	m	struct:clock
 head	algorithm/algorithm_queue.h	/^	unsigned long head;$/;"	m	struct:__anon1
 i2c	bus/buses/i2c/i2c.c	/^const struct bus * const i2c = &bus;$/;"	v
@@ -1276,7 +1295,7 @@ i2c_device	bus/buses.bak/i2c.h	/^	struct i2c_device{const unsigned char fd; cons
 i2c_device	bus/buses/i2c/i2c_dev.h	/^    struct i2c_device{$/;"	s
 i2c_enable	inode/driver/remote_board.c	/^ static const struct {const unsigned char port; const unsigned char pos;}i2c_enable = IPMB_BUFFER_EN;\/\/临时放到这里，将来要单独封装到一个文件中$/;"	v	typeref:struct:__anon52	file:
 i2c_enable	inode/driver/shelf.c	/^ static const struct {const unsigned char port; const unsigned char pos;}i2c_enable = IPMB_BUFFER_EN;\/\/临时放到这里，将来要单独封装到一个文件中$/;"	v	typeref:struct:__anon57	file:
-i2c_getchar	bus/buses/i2c/i2c_arch_adapter.c	/^unsigned char i2c_getchar(unsigned int index , unsigned char slave_addr)$/;"	f
+i2c_getchar	cpu/lpc17xx/i2c_lpc17xx.c	/^unsigned char i2c_getchar(unsigned char fd)$/;"	f
 i2c_init	bus/buses.bak/i2c.c	/^unsigned char i2c_init(unsigned char fd, enum i2c_mode mode)$/;"	f
 i2c_init_master	bus/buses.bak/i2c.c	/^unsigned char i2c_init_master(unsigned char fd)$/;"	f
 i2c_init_slave	bus/buses.bak/i2c.c	/^unsigned char i2c_init_slave(unsigned char fd, unsigned char addr)$/;"	f
@@ -1285,19 +1304,13 @@ i2c_listener_s	bus/buses.bak/i2c_base.h	/^	struct i2c_listener_s{$/;"	s
 i2c_manager_s	bus/buses.bak/i2c_bus.h	/^ struct i2c_manager_s{$/;"	s
 i2c_mode	bus/buses.bak/i2c_bus.h	/^ enum i2c_mode{$/;"	g
 i2c_mode	bus/buses/i2c/i2c_session.h	/^enum i2c_mode$/;"	g
-i2c_on_recive_char	bus/buses/i2c/i2c_arch_adapter.c	/^void i2c_on_recive_char(unsigned int index, unsigned char recv)$/;"	f
-i2c_on_send_char	bus/buses/i2c/i2c_arch_adapter.c	/^void i2c_on_send_char()$/;"	f
 i2c_read	bus/buses.bak/i2c.c	/^unsigned long i2c_read(unsigned char fd, char * buffer, unsigned long size)$/;"	f
-i2c_recv	bus/buses/i2c/i2c_arch_adapter.c	/^unsigned int i2c_recv(unsigned int index , unsigned char slave_addr, unsigned char * data, unsigned int size)$/;"	f
 i2c_recv	cpu/lpc17xx/i2c_lpc17xx.c	/^unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data, unsigned int size)$/;"	f
 i2c_s	cpu/lpc17xx/i2c_lpc17xx.h	/^    struct i2c_s{$/;"	s
-i2c_send	bus/buses/i2c/i2c_arch_adapter.c	/^unsigned int i2c_send(unsigned int index , unsigned char slave_addr, const unsigned char * data, unsigned int size)$/;"	f
 i2c_send	cpu/lpc17xx/i2c_lpc17xx.c	/^unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char * data, unsigned int size)$/;"	f
-i2c_send_recv	bus/buses/i2c/i2c_arch_adapter.c	/^unsigned int i2c_send_recv(unsigned int index , unsigned char slave_addr, const unsigned char *send_data, unsigned int send_size, unsigned char *recv_data, unsigned int recv_size)$/;"	f
+i2c_send_recv	cpu/lpc17xx/i2c_lpc17xx.c	/^unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char * send_data, unsigned int send_size, unsigned char recv_data, unsigned int recv_size)$/;"	f
 i2c_session	bus/buses.bak/i2c.h	/^	struct i2c_session{$/;"	s
 i2c_session	bus/buses/i2c/i2c_session.h	/^struct i2c_session$/;"	s
-i2c_set_get_char	bus/buses/i2c/i2c_arch_adapter.c	/^unsigned char i2c_set_get_char(unsigned int index , unsigned char slave_addr, unsigned char data)$/;"	f
-i2c_setchar	bus/buses/i2c/i2c_arch_adapter.c	/^void i2c_setchar(unsigned int index , unsigned char slave_addr, unsigned char data)$/;"	f
 i2c_slave_address	bus/buses.bak/i2c.c	/^void i2c_slave_address(unsigned char fd, unsigned char addr_rw)$/;"	f
 i2c_start	cpu/lpc17xx/i2c_lpc17xx.c	/^unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)$/;"	f
 i2c_stop	cpu/lpc17xx/i2c_lpc17xx.c	/^unsigned int i2c_stop(unsigned char fd)$/;"	f
@@ -1307,6 +1320,7 @@ i2cs	cpu/lpc17xx/i2c_lpc17xx.c	/^    const struct i2c_s i2cs;$/;"	m	struct:__ano
 init	inode/driver.h	/^    void (*init)();$/;"	m	struct:file_operation
 init_files	file/file_manager.c	/^void init_files()$/;"	f
 input	bus/buses.bak/i2c.h	/^				char * input;\/\/读取消息缓冲区$/;"	m	union:i2c_session::__anon4::__anon5
+interrupted	bus/buses/gpio/gpio_session.h	/^    interrupted,$/;"	e	enum:state_bit
 interrupted	bus/buses/i2c/i2c_session.h	/^    interrupted,$/;"	e	enum:state_bit
 ioctl	file/file_manager.c	/^int ioctl(int fd, int request, void * param)$/;"	f
 ioctl	inode/driver.h	/^	int (*ioctl)(unsigned int bus, unsigned int dev, unsigned int request, unsigned long arg);$/;"	m	struct:file_operation
@@ -1353,6 +1367,7 @@ mask	cpu/lpc17xx/LPC17xx.h	/^  __IO uint32_t mask[512];              \/* ID Mask
 mask	inode/driver/slot.c	/^const struct {const unsigned char port; const unsigned char pos; const unsigned char mask;}slot;} slot_gpio = BOARD_SLOT;$/;"	m	struct:__anon61::__anon63	file:
 master	bus/buses.bak/i2c_bus.h	/^	master$/;"	e	enum:i2c_mode
 master	bus/buses/i2c/i2c_session.h	/^    master$/;"	e	enum:i2c_mode
+mode	bus/buses/gpio/gpio_session.h	/^    enum gpio_mode mode;$/;"	m	struct:gpio_config	typeref:enum:gpio_config::gpio_mode
 mode	bus/buses/i2c/i2c_session.h	/^    enum i2c_mode mode;$/;"	m	struct:i2c_config	typeref:enum:i2c_config::i2c_mode
 mode	inode/driver/ttyS.c	/^ static unsigned char mode = 0;$/;"	v	file:
 mode_param	inode/driver/ttyS.c	/^ static unsigned long mode_param = 0;$/;"	v	file:
@@ -1365,6 +1380,7 @@ name	bus/string/string_bus.h	/^    const char * const name;$/;"	m	struct:string_
 name	file/file.h	/^    const char * const name;$/;"	m	struct:file
 name	inode/driver.h	/^    const char * const name;$/;"	m	struct:driver
 offer	algorithm/algorithm_queue.c	/^ unsigned char offer(calc_queue *queue, const void * source)$/;"	f
+offset	bus/buses/gpio/gpio_dev.h	/^        unsigned char offset;$/;"	m	struct:gpio_device
 offset	bus/map_register/gpio/gpio_dev.h	/^    unsigned char offset;$/;"	m	struct:map_register
 on_get_msg_size	bus/buses.bak/i2c.c	/^static unsigned char on_get_msg_size(unsigned char fd)$/;"	f	file:
 on_i2c_get_addr	bus/buses.bak/i2c.c	/^static unsigned char on_i2c_get_addr(unsigned char fd)$/;"	f	file:
@@ -1416,6 +1432,9 @@ queue_clean	algorithm/algorithm_queue.c	/^ unsigned long queue_clean(calc_queue 
 queue_create	algorithm/algorithm_queue.c	/^ calc_queue * queue_create(unsigned long unit, unsigned long size)$/;"	f
 queue_delete	algorithm/algorithm_queue.c	/^ void queue_delete(calc_queue *queue)$/;"	f
 queue_length	algorithm/algorithm_queue.c	/^ unsigned long queue_length(const calc_queue *const queue)$/;"	f
+queue_size	bus/buses/gpio/gpio_session.h	/^    Semaphore queue_size;$/;"	m	struct:gpio_session
+queue_size	bus/buses/i2c/i2c_session.h	/^    Semaphore queue_size;$/;"	m	struct:i2c_session
+read	bus/buses/gpio/gpio_session.h	/^    read,$/;"	e	enum:state_bit
 read	bus/buses/i2c/i2c_session.h	/^    read,$/;"	e	enum:state_bit
 read	file/file_manager.c	/^int read(int fd, void *buf, unsigned long count)$/;"	f
 read	inode/driver.h	/^	int (*read)(unsigned int bus, unsigned int dev, void *buf, unsigned long count);$/;"	m	struct:file_operation
@@ -1423,10 +1442,11 @@ read_collect	inode/driver/ttyS.c	/^static const read_method read_collect[] = {tt
 read_ctrler	bus/buses.bak/uart.c	/^	}read_ctrler;\/\/控制描述$/;"	m	struct:uart_sessor_s	typeref:struct:uart_sessor_s::__anon2	file:
 read_fan	APP/service/service_shelf.c	/^ int read_fan(char * msg)$/;"	f
 read_method	inode/driver/ttyS.c	/^typedef int (*read_method)(void *, unsigned long);$/;"	t	file:
-read_start	bus/bus.h	/^    void (*const read_start)(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);$/;"	m	struct:char_bus
-read_stop	bus/bus.h	/^    void (*const read_stop) (unsigned int dev);$/;"	m	struct:char_bus
+read_start	bus/bus.h	/^    unsigned int (*const read_start)(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);$/;"	m	struct:char_bus
+read_stop	bus/bus.h	/^    unsigned int (*const read_stop) (unsigned int dev);$/;"	m	struct:char_bus
 recv	bus/bus.h	/^    unsigned int (* const recv)(unsigned int dev, unsigned char * data, unsigned int size);$/;"	m	struct:string_bus
 recv	bus/bus_session.h	/^    struct buffer_recv recv;$/;"	m	struct:bus_session	typeref:struct:bus_session::buffer_recv
+recv	bus/buses/gpio/gpio.c	/^static unsigned int recv(unsigned int dev, unsigned char * data, unsigned int size)$/;"	f	file:
 recv	bus/buses/i2c/i2c.c	/^static unsigned int recv(unsigned int dev, unsigned char * data, unsigned int size)$/;"	f	file:
 recv	bus/string/string_bus.h	/^    unsigned int (* const recv)(unsigned int dev, unsigned char * data, unsigned int size);$/;"	m	struct:string_bus
 recv_char	bus/buses.bak/i2c_base.h	/^		set_char_message recv_char;$/;"	m	struct:i2c_callback
@@ -1466,11 +1486,13 @@ sem	bus/buses.bak/uart.c	/^		OS_EVENT  * sem;\/\/用于阻塞(同步)$/;"	m	struct:uar
 send	bus/bus.h	/^    unsigned int (* const send)(unsigned int dev, const unsigned char * data, unsigned int size);$/;"	m	struct:string_bus
 send	bus/bus_session.h	/^    struct buffer_send send;$/;"	m	struct:bus_session	typeref:struct:bus_session::buffer_send
 send	bus/buses.bak/uart_bus.h	/^		unsigned char (*send)( unsigned char fd, char c);$/;"	m	struct:uart_manager_s
+send	bus/buses/gpio/gpio.c	/^static unsigned int send(unsigned int dev, const unsigned char * data, unsigned int size)$/;"	f	file:
 send	bus/buses/i2c/i2c.c	/^static unsigned int send(unsigned int dev, const unsigned char * data, unsigned int size)$/;"	f	file:
 send	bus/string/string_bus.h	/^    unsigned int (* const send)(unsigned int dev, const unsigned char * data, unsigned int size);$/;"	m	struct:string_bus
 send_char	bus/buses.bak/i2c_base.h	/^		get_char_message send_char;$/;"	m	struct:i2c_callback
 send_data	cpu/lpc17xx/i2c_lpc17xx.c	/^static int send_data(unsigned char fd, unsigned char state)$/;"	f	file:
 send_recv	bus/bus.h	/^    unsigned int (* const send_recv)(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);$/;"	m	struct:string_bus
+send_recv	bus/buses/gpio/gpio.c	/^static unsigned int send_recv(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size)$/;"	f	file:
 send_recv	bus/buses/i2c/i2c.c	/^static unsigned int send_recv(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size)$/;"	f	file:
 send_recv	bus/string/string_bus.h	/^    unsigned int (* const send_recv)(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);$/;"	m	struct:string_bus
 send_slave_addr	cpu/lpc17xx/i2c_lpc17xx.c	/^static int send_slave_addr(unsigned char fd, unsigned char state)$/;"	f	file:
@@ -1484,9 +1506,11 @@ service_get_rtm_temperature	APP/service/service_rtm.c	/^ int service_get_rtm_tem
 service_get_rtm_version	APP/service/service_rtm.c	/^ int service_get_rtm_version(char *msg)$/;"	f
 service_rtm_power	APP/service/service_rtm.c	/^ void service_rtm_power()$/;"	f
 service_set_rtm_eeprom	APP/service/service_rtm.c	/^ int service_set_rtm_eeprom(char *msg)$/;"	f
+session	bus/buses/gpio/gpio_session.h	/^    struct bus_session session;$/;"	m	struct:gpio_session	typeref:struct:gpio_session::bus_session
 session	bus/buses/i2c/i2c_session.h	/^    struct bus_session session;$/;"	m	struct:i2c_session	typeref:struct:i2c_session::bus_session
 session	cpu/lpc17xx/i2c_lpc17xx.c	/^    struct i2c_session session;$/;"	m	struct:__anon8	typeref:struct:__anon8::i2c_session	file:
 sessons	bus/buses.bak/i2c.c	/^static struct i2c_session *sessons = NULL;$/;"	v	typeref:struct:i2c_session	file:
+setAck	bus/buses/gpio/gpio_session.h	/^    setAck$/;"	e	enum:state_bit
 setAck	bus/buses/i2c/i2c_session.h	/^    setAck$/;"	e	enum:state_bit
 set_ack	cpu/lpc17xx/i2c_lpc17xx.c	/^static int set_ack(unsigned char fd)$/;"	f	file:
 set_callback	bus/buses.bak/i2c.c	/^static void set_callback(unsigned char fd)$/;"	f	file:
@@ -1509,7 +1533,6 @@ set_en	APP/service/service_en.c	/^ void set_en(const char *service, unsigned cha
 set_fan_para	APP/service/service_shelf.c	/^ int set_fan_para(char * msg)$/;"	f
 set_fan_reboot	APP/service/service_shelf.c	/^ int set_fan_reboot(char * msg)$/;"	f
 set_fan_speed	APP/service/service_shelf.c	/^ int set_fan_speed(char * msg)$/;"	f
-set_get_char	bus/buses/i2c/i2c.c	/^static unsigned char set_get_char(unsigned int dev, unsigned char data)$/;"	f	file:
 set_get_char	bus/char/char_bus.h	/^    unsigned char (* const set_get_char)(unsigned int dev, unsigned char data);$/;"	m	struct:char_bus
 set_get_char	bus/string/string_bus.h	/^    unsigned char (* const set_get_char)(unsigned int dev, unsigned char data);$/;"	m	struct:string_bus
 set_gpio_bit_off	bus/buses.bak/gpio.c	/^void set_gpio_bit_off(unsigned char port, unsigned int bit)$/;"	f
@@ -1548,8 +1571,8 @@ set_sys_oren_on	APP/service/service_en.c	/^ void set_sys_oren_on()$/;"	f
 set_transport_finish	bus/buses.bak/i2c_base.c	/^static void set_transport_finish(do_sth p)$/;"	f	file:
 set_transport_finish	bus/buses.bak/uart_base.c	/^ static void set_transport_finish(do_sth p)$/;"	f	file:
 set_wrbit	bus/buses.bak/i2c.h	19;"	d
-setbit	bus/buses/i2c/i2c_session.h	36;"	d
-setchar	bus/buses/i2c/i2c.c	/^static void setchar(unsigned int dev, unsigned char data)$/;"	f	file:
+setbit	bus/buses/gpio/gpio_session.h	31;"	d
+setbit	bus/buses/i2c/i2c_session.h	37;"	d
 setchar	bus/char/char_bus.h	/^    void (* const setchar)(unsigned int dev, unsigned char data);$/;"	m	struct:char_bus
 setchar	bus/string/string_bus.h	/^    void (* const setchar)(unsigned int dev, unsigned char data);$/;"	m	struct:string_bus
 setdata	file/file_service.c	/^ int setdata(const char * file_name, const void * buffer, unsigned long size){$/;"	f
@@ -1577,14 +1600,18 @@ slot_open	inode/driver/slot.c	/^static int slot_open(const char * filename, int 
 slot_read	inode/driver/slot.c	/^static int slot_read(void *buf, unsigned long count)$/;"	f	file:
 stack	task/tasks/controller.c	/^static 	 OS_STK stack[0x512]; $/;"	v	file:
 stack	task/tasks/monitor.c	/^static 	 OS_STK stack[64]; $/;"	v	file:
-start	bus/buses/i2c/i2c.c	/^static void start(unsigned int dev)$/;"	f	file:
+start	bus/buses/gpio/gpio.c	/^static unsigned int start(unsigned int dev, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)$/;"	f	file:
+start	bus/buses/i2c/i2c.c	/^static unsigned int start(unsigned int dev, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)$/;"	f	file:
 start	bus/char/char_bus.h	/^    void (*const start)(unsigned int dev);$/;"	m	struct:char_bus
 start	cpu/lpc17xx/i2c_lpc17xx.c	/^static unsigned int start(unsigned char fd)$/;"	f	file:
 start_tasks	task/task_manager.c	/^void start_tasks()$/;"	f
+state_bit	bus/buses/gpio/gpio_session.h	/^enum state_bit$/;"	g
 state_bit	bus/buses/i2c/i2c_session.h	/^enum state_bit$/;"	g
+state_bitmap	bus/buses/gpio/gpio_session.h	/^    unsigned char state_bitmap;$/;"	m	struct:gpio_session
 state_bitmap	bus/buses/i2c/i2c_session.h	/^    unsigned char state_bitmap;$/;"	m	struct:i2c_session
 stop	bus/buses.bak/i2c_bus.h	/^	unsigned int (*stop)( unsigned char fd );$/;"	m	struct:i2c_manager_s
-stop	bus/buses/i2c/i2c.c	/^static void stop(unsigned int dev)$/;"	f	file:
+stop	bus/buses/gpio/gpio.c	/^static unsigned int stop(unsigned int dev)$/;"	f	file:
+stop	bus/buses/i2c/i2c.c	/^static unsigned int stop(unsigned int dev)$/;"	f	file:
 stop	bus/char/char_bus.h	/^    void (*const stop) (unsigned int dev);$/;"	m	struct:char_bus
 stop	cpu/lpc17xx/i2c_lpc17xx.c	/^static unsigned int stop(unsigned char fd, unsigned char state)$/;"	f	file:
 string_bus	bus/bus.h	/^struct string_bus {$/;"	s
@@ -1681,6 +1708,7 @@ use_mutex	algorithm/algorithm_queue.h	/^	OS_EVENT  * use_mutex;$/;"	m	struct:__a
 use_mutex	bus/buses.bak/uart.c	/^	OS_EVENT  * use_mutex;\/\/用于独占(互斥)$/;"	m	struct:uart_sessor_s	file:
 usingbus	bus/bus_ctrl.h	/^    Locker usingbus;$/;"	m	struct:bus_ctrler
 work	bus/buses.bak/i2c_bus.h	/^	unsigned char (*work)( unsigned char fd );$/;"	m	struct:i2c_manager_s
+write	bus/buses/gpio/gpio_session.h	/^    write,$/;"	e	enum:state_bit
 write	bus/buses/i2c/i2c_session.h	/^    write,$/;"	e	enum:state_bit
 write	file/file_manager.c	/^int write(int fd, const void *buf, unsigned long count)$/;"	f
 write	inode/driver.h	/^	int (*write)(unsigned int bus, unsigned int dev, const void *buf, unsigned long count);$/;"	m	struct:file_operation

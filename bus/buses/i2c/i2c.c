@@ -29,21 +29,24 @@ static unsigned char getchar(unsigned int dev)
 static unsigned int send(unsigned int dev, const unsigned char * data, unsigned int size)
 {
     if(dev < dev_size)
-        return i2c_send(device_list[dev].bus_index, device_list[dev].slave_addr, data, size);
+        if(data && size)
+            return i2c_send(device_list[dev].bus_index, device_list[dev].slave_addr, data, size);
     return 0;
 }
 
 static unsigned int recv(unsigned int dev, unsigned char * data, unsigned int size)
 {
     if(dev < dev_size)
-        return i2c_recv(device_list[dev].bus_index, device_list[dev].slave_addr, data, size);
+        if(data && size)
+            return i2c_recv(device_list[dev].bus_index, device_list[dev].slave_addr, data, size);
     return 0;
 }
 
 static unsigned int send_recv(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size)
 {
     if(dev < dev_size)
-        return i2c_send_recv(device_list[dev].bus_index, device_list[dev].slave_addr, send_data, send_size, recv_data, recv_size);
+        if(send_data && send_size && recv_data && recv_size)
+            return i2c_send_recv(device_list[dev].bus_index, device_list[dev].slave_addr, send_data, send_size, recv_data, recv_size);
     return 0;
 }
 
