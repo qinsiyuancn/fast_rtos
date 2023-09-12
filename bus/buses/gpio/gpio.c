@@ -5,36 +5,32 @@
 
 static  struct gpio_device device_list[] = I2C_DEV_LIST;
 
-static unsigned int start(unsigned int dev, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
-{
-    if(dev < dev_size)
-        return gpio_start(device_list[dev].address, send_buffer, send_size, recv_buffer, recv_size);
-    return 1;
-}
-
 static unsigned char getchar(unsigned int dev)
 {
     if(dev < dev_size)
-        return gpio_getchar(device_list[dev].address);
+        return 0 != get_gpio(device_list[dev].address, 0x1 << device_list[dev].offset);
     return 0;
 }
 
 static unsigned int send(unsigned int dev, const unsigned char * data, unsigned int size)
 {
+    static void (* const set_gpio_operation)[](unsigned char port, unsigned int mask) = {
+       set_gpio_off,
+       set_gpio_on,
+    };
     if(dev < dev_size)
-        if(data && size) {
-            return gpio_send(device_list[dev].address, device_list[dev].offset, *data);
+        if(data && size > 1) {
+            if(data[0] < (sizeof(set_gpio_operation)/sizeof(set_gpio_operation[0])))
+                return gpio_send(device_list[dev].address, 0x1 << device_list[dev].offset, data[1]);
     return 0;
 }
-
 static unsigned int recv(unsigned int dev, unsigned char * data, unsigned int size)
 {
     if(dev < dev_size) {
         if(data && size) {
-            gpio_recv(device_list[dev].address, data);
-	    *data = ((*data) >> device_list[dev].offset) & 0x1;
-	    return 1;
-	}
+           *data = getchar(dev);
+           return 1;
+       }
     }
     return 0;
 }
@@ -43,10 +39,9 @@ static unsigned int send_recv(unsigned int dev, const unsigned char * send_data,
 {
     if(dev < dev_size) {
         send(send_data, send_size);
-	return recv(recv_data, recv_size);
+        return recv(recv_data, recv_size);
     }
     return 0;
 }
-
-static const struct bus bus = {"gpio", {start, NULL, getchar}, {send, recv, send_recv}};
+static const struct bus bus = {"gpio", {NULL, NULL, getchar}, {send, recv, send_recv}};
 const struct bus * const gpio = &bus;
