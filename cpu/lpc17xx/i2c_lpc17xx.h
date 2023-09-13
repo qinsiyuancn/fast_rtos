@@ -43,7 +43,7 @@
             const unsigned int pin_v;
         } pin;
     };
-    #define i2c_count() (sizeof(i2cs)/sizeof(i2cs[0]))
+    #define i2c_count() (sizeof(bus)/sizeof(bus[0]))
 //    extern const struct i2c_manager_s * const i2c_bus_manager;
     #endif
 #endif

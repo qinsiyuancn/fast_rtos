@@ -37,8 +37,8 @@ static unsigned int stop(unsigned char fd, unsigned char state)
             bus[fd].session.session.recv.size = 0;
             bus[fd].session.session.send.buffer = NULL;
             bus[fd].session.session.send.size = 0;
-	    os_sem_post(bus[fd].session.session.ctrl.finish);
-	    os_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
+            os_sem_post(bus[fd].session.session.ctrl.finish);
+            os_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
         }
     return 1;
 }
