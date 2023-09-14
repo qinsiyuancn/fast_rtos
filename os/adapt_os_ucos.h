@@ -5,29 +5,29 @@
 #include "ucos_ii.h"
 
 // task
-typedef void  (*fun) (void *p_arg);
-typedef OS_STK stack_buffer;
-typedef unsigned int stack_size;
-typedef INT8U priority;
+typedef void  (*FastRtosFun) (void *p_arg);
+typedef OS_STK FastRtosStackBuffer;
+typedef unsigned int FastRtosStackSize;
+typedef INT8U FastRtosPriority;
 
-#define task_create(task) OSTaskCreate(task.fun, (void*)0, task.stack.pointer + task_list.stack.size - 1, task->priority)
+#define fast_rtos_task_create(task) OSTaskCreate(task.fun, (void*)0, task.stack.pointer + task_list.stack.size - 1, task->priority)
 
 // Semaphore
-typedef OS_EVENT * Semaphore;
-typedef INT8U SemaphoreErrorCode;
+typedef OS_EVENT * FastRtosSemaphore;
+typedef INT8U FastRtosSemaphoreErrorCode;
 
-#define os_sem_init(semphore, count) semphore = OSSemCreate(count)
-#define os_sem_post(semphore) OSSemPost(semphore)
-#define os_sem_wait(semphore) OSSemPend(semphore)
-#define os_sem_try(semphore)  OSSemAccept(semphore)
-#define os_sem_delete(semphore, error_code) do {\
+#define fast_rtos_sem_init(semphore, count) semphore = OSSemCreate(count)
+#define fast_rtos_sem_post(semphore) OSSemPost(semphore)
+#define fast_rtos_sem_wait(semphore) OSSemPend(semphore)
+#define fast_rtos_sem_try(semphore)  OSSemAccept(semphore)
+#define fast_rtos_sem_delete(semphore, error_code) do {\
         OSSemDel(semphore, OS_DEL_ALWAYS, &error_code);\
         semphore = NULL;\
     }while(0)
 
-#define os_sem_enable(semphore) semphore
-#define os_sem_count(semphore) (semphore->OSEventCnt)
-#define os_sem_get_count(count, semphore) count = os_sem_count(semphore)
+#define fast_rtos_sem_enable(semphore) semphore
+#define fast_rtos_sem_count(semphore) (semphore->OSEventCnt)
+#define fast_rtos_sem_get_count(count, semphore) count = os_sem_count(semphore)
 
 #endif
 

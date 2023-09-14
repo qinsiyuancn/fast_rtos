@@ -3,17 +3,17 @@
 
 #include "os_adapter.h"
 
-struct stack
+struct Stack
 {
-    stack_buffer* const pointer;
-    const stask_size size;
+    FastRtosStackBuffer* const pointer;
+    const FastRtosStaskSize size;
 };
 
 struct Task
 {
-    const fun fun;
-    const struct stack stack;
-    const priority priority;
+    const FastRtosFun fun;
+    const struct Stack stack;
+    const FastRtosPriority priority;
 };
 
 #define define_stack(stack) {stack, sizeof(stack) / sizeof(stack[0])}

@@ -31,15 +31,16 @@ static int clear_sic(unsigned char fd)
 
 static unsigned int stop(unsigned char fd, unsigned char state)
 {
+    FastRtosSemaphoreErrorCode error_code;
     if(fd < i2c_count())
         if(bus_stop(fd)) {
             bus[fd].session.session.recv.buffer = NULL;
             bus[fd].session.session.recv.size = 0;
             bus[fd].session.session.send.buffer = NULL;
             bus[fd].session.session.send.size = 0;
-            os_sem_post(bus[fd].session.session.ctrl.finish);
-            os_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
-	    os_sem_delete(bus[fd].session.queue_size);
+            fast_rtos_sem_post(bus[fd].session.session.ctrl.finish);
+            fast_rtos_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
+	    fast_rtos_sem_delete(bus[fd].session.queue_size, error_code);
         }
     return 1;
 }
@@ -111,7 +112,7 @@ static int recv_data(unsigned char fd, unsigned char state)
     */
     if (bus[fd].session.session.recv.buffer) {
         bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
-        if(os_sem_enable(bus[fd].session.queue_size))os_sem_post(bus[fd].session.queue_size);
+        if(fast_rtos_sem_enable(bus[fd].session.queue_size))fast_rtos_sem_post(bus[fd].session.queue_size);
         if (bus[fd].session.current == 2)
             clrbit(fd, ack);
     }
@@ -142,12 +143,12 @@ unsigned char i2c_getchar(unsigned char fd)
     unsigned int current = 0;
     unsigned int count = 0;
     if (fd < i2c_count) {
-        if (os_sem_enable(bus[fd].session.queue_size)) {
-            os_sem_wait(bus[fd].session.queue_size);
+        if (fast_rtos_sem_enable(bus[fd].session.queue_size)) {
+            fast_rtos_sem_wait(bus[fd].session.queue_size);
             do{
                 clrbit(bus[fd].session.state_bitmap, interrupted);
                 current = bus[fd].session.current;
-                os_sem_get_count(count, bus[fd].session.queue_size);
+                fast_rtos_sem_get_count(count, bus[fd].session.queue_size);
             }while(getbit(bus[fd].session.state_bitmap, interrupted));
             return bus[fd].session.session.recv.buffer[current - count - 1];
 	}
@@ -159,7 +160,7 @@ unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char *
 {
     if (fd < i2c_count) {
         if (send_data && send_size && recv_data && recv_size) {
-            os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.send.buffer = send_buffer;
             bus[fd].session.session.send.size = send_size;
             setbit(bus[fd].session.state_bitmap, write);
@@ -172,7 +173,7 @@ unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char *
             bus[fd].session.current = 0;
             recv_size < 2 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
             start(fd);
-            os_sem_wait(bus[fd].session.session.ctrl.finish);
+            fast_rtos_sem_wait(bus[fd].session.session.ctrl.finish);
 	}
 	return 2;
     }
@@ -183,7 +184,7 @@ unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data
 {
     if(fd < i2c_count()) {
         if(data && size){
-            os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.recv.buffer = data;
             bus[fd].session.session.recv.size = size;
             bus[fd].session.address = addr;
@@ -191,7 +192,7 @@ unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data
             setbit(bus[fd].session.state_bitmap, read);
             bus[fd].session.current = 0;
             start(fd);
-            os_sem_wait(bus[fd].session.session.ctrl.finish);
+            fast_rtos_sem_wait(bus[fd].session.session.ctrl.finish);
             return 0;
         }
         return 2;
@@ -203,7 +204,7 @@ unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char 
 {
     if(fd < i2c_count()){
         if (data && size) {
-            os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
             bus[fd].session.session.send.buffer = data;
             bus[fd].session.session.send.size = size;
             bus[fd].session.address = addr;
@@ -211,7 +212,7 @@ unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char 
             setbit(bus[fd].session.state_bitmap, write);
             bus[fd].session.current = 0;
             start(fd);
-            os_sem_wait(bus[fd].session.session.ctrl.finish);
+            fast_rtos_sem_wait(bus[fd].session.session.ctrl.finish);
             return 0;
         }
         return 2;
@@ -229,7 +230,7 @@ unsigned int i2c_stop(unsigned char fd)
 unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
 {
     if(fd >= i2c_count())return 1;
-    os_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+    fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
     if(send_buffer && send_size){
         bus[fd].session.session.send.buffer = send_buffer;
         bus[fd].session.session.send.size = send_size;
@@ -246,7 +247,7 @@ unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * sen
     bus[fd].session.current = 0;
     recv_size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
     setbit(bus[fd].session.state_bitmap, read);
-    os_sem_init(bus[fd].session.queue_size, recv_size);
+    fast_rtos_sem_init(bus[fd].session.queue_size, recv_size);
     return start(fd);
 }
 
@@ -291,7 +292,7 @@ int i2c_bus_init(unsigned char fd)
 {
     static void (* const set_mode[])(unsigned int) = {set_mode_slave, set_mode_master};
     if(fd >= i2c_count())return 1;
-    os_sem_init(bus[fd].session.session.ctrl.finish, 0);
+    fast_rtos_sem_init(bus[fd].session.session.ctrl.finish, 0);
     LPC_SC->PCONP |= (1 << bus[fd].i2cs.pconp);
 
     *(bus[fd].i2cs.pin.pin_p) |= bus[fd].i2cs.pin.pin_v;

@@ -3,8 +3,8 @@
 
 struct bus_ctrler
 {
-    Semaphore finish;
-    Locker usingbus;
+    FastRtosSemaphore finish;
+    FastRtosLocker usingbus;
 };
 
 #endif
