@@ -40,7 +40,7 @@ static unsigned int stop(unsigned char fd, unsigned char state)
             bus[fd].session.session.send.size = 0;
             fast_rtos_sem_post(bus[fd].session.session.ctrl.finish);
             fast_rtos_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
-	    fast_rtos_sem_delete(bus[fd].session.queue_size, error_code);
+	    fast_rtos_sem_deinit(bus[fd].session.queue_size, error_code);
         }
     return 1;
 }
@@ -158,9 +158,10 @@ unsigned char i2c_getchar(unsigned char fd)
 
 unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char * send_data, unsigned int send_size, unsigned char recv_data, unsigned int recv_size)
 {
+    FastRtosSemaphoreErrorCode error_code;
     if (fd < i2c_count) {
         if (send_data && send_size && recv_data && recv_size) {
-            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
             bus[fd].session.session.send.buffer = send_buffer;
             bus[fd].session.session.send.size = send_size;
             setbit(bus[fd].session.state_bitmap, write);
@@ -182,9 +183,10 @@ unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char *
 
 unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data, unsigned int size)
 {
+    FastRtosSemaphoreErrorCode error_code;
     if(fd < i2c_count()) {
         if(data && size){
-            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
             bus[fd].session.session.recv.buffer = data;
             bus[fd].session.session.recv.size = size;
             bus[fd].session.address = addr;
@@ -202,9 +204,11 @@ unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data
 
 unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char * data, unsigned int size)
 {
+    
+    FastRtosSemaphoreErrorCode error_code;
     if(fd < i2c_count()){
         if (data && size) {
-            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
             bus[fd].session.session.send.buffer = data;
             bus[fd].session.session.send.size = size;
             bus[fd].session.address = addr;
@@ -229,8 +233,9 @@ unsigned int i2c_stop(unsigned char fd)
 
 unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
 {
+    FastRtosSemaphoreErrorCode error_code;
     if(fd >= i2c_count())return 1;
-    fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus);
+    fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
     if(send_buffer && send_size){
         bus[fd].session.session.send.buffer = send_buffer;
         bus[fd].session.session.send.size = send_size;
@@ -291,8 +296,10 @@ static void set_mode_master(unsigned int fd)
 int i2c_bus_init(unsigned char fd)
 {
     static void (* const set_mode[])(unsigned int) = {set_mode_slave, set_mode_master};
+    FastRtosSemaphoreErrorCode error_code;
     if(fd >= i2c_count())return 1;
     fast_rtos_sem_init(bus[fd].session.session.ctrl.finish, 0);
+    fast_rtos_lock_init(bus[fd].session.session.ctrl.usingbus, 0, error_code)
     LPC_SC->PCONP |= (1 << bus[fd].i2cs.pconp);
 
     *(bus[fd].i2cs.pin.pin_p) |= bus[fd].i2cs.pin.pin_v;
