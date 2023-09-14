@@ -1,6 +1,6 @@
 #include "monitor.h"
 
-static 	 OS_STK stack[64]; 
+static stack_buffer stack[64]; 
 
 /*
  * 轮训操作
@@ -25,10 +25,9 @@ static void fun(void *p_arg)
 			service_rtm_power();
 		#endif
 		//监控把手，不用中断了，轮训吧，挺好,本来之前就是中断加轮训,改变全局变量，不如直接读gpio状态...
-
 		OSTimeDlyHMSM(0, 0, 0, 20);
 	}
 }
 
-static const struct Task task = {fun, {stack, (sizeof(stack)/sizeof(stack[0]))}};
+static const struct Task task = {fun, define_stack(stack), 5};
 const struct Task * const monitor = &task;

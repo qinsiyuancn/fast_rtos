@@ -1,6 +1,7 @@
 #include "controller.h"
+#include "task.h"
 
-static 	 OS_STK stack[0x512]; 
+static task_buffer stack[0x512]; 
 
 /*
  * 监控控制端发过来的命令
@@ -21,5 +22,5 @@ static  void  controller (void *p_arg)
 	}
 }
 
-static const struct Task task = {fun, {stack, (sizeof(stack)/sizeof(stack[0]))}};
+static const struct Task task = {fun, define_stack(stack), 4};
 const struct Task * const controller = &task;
