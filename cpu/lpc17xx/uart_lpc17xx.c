@@ -127,7 +127,7 @@ static const struct uart_manager_s uart_manager = {
     &uart_listener
 };
 
-const struct uart_manager_s * const uart_bus_manager_pointer = &uart_manager;
+// const struct uart_manager_s * const uart_bus_manager_pointer = &uart_manager;
 #endif
 /******************************************************************************
 **                            End Of File
