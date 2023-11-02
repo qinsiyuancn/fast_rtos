@@ -52,5 +52,4 @@ void GpioIntInit(void)
     NVIC_EnableIRQ(EINT3_IRQn);  	
 }
 
-// const struct gpio_manager_s gpio_manager = {GpioIntInit, get_gpio, set_gpio_off, set_gpio_on, gpio_IRQHandler};
 #endif

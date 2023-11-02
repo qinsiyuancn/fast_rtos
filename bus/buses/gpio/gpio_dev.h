@@ -2,7 +2,7 @@
 #define __GPIO_DEVICE_H__
     
     struct gpio_device{
-        unsigned char * const address;
+        unsigned char port;
         unsigned char offset;
     };
 

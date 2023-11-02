@@ -81,8 +81,8 @@ void uart_irq_handler(unsigned char fd)
 *****************************************************************************/
 static int UARTInit( unsigned char fd, unsigned long baudrate )
 {
+    static const unsigned char div[] = {4,1,2,8};
     uint32_t Fdiv;
-    const unsigned char div[] = {4,1,2,8};
     const enum IRQn irqn[] = {UART0_IRQn, UART2_IRQn, UART3_IRQn};
     *(volatile unsigned int *)0x400FC0C4 |= 0X1 << 24;
     LPC_PINCON->PINSEL0 &= ~0x000000F0;
