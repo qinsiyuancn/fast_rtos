@@ -79,7 +79,7 @@ void uart_irq_handler(unsigned char fd)
 **						VIC table
 ** 
 *****************************************************************************/
-static int UARTInit( unsigned char fd, unsigned long baudrate )
+int uart_bus_init( unsigned char fd, unsigned long baudrate )
 {
     static const unsigned char div[] = {4,1,2,8};
     uint32_t Fdiv;
