@@ -2,19 +2,24 @@
  * file.h
  * create by qinsiyuan
  *			on 2016-7-22
- * 定义文件操作
  */
 
  #ifndef __DRIVER_H__
  #define __DRIVER_H__
 
- struct file_operation{
+ struct file_operation {
     void (*init)();
-	int (*open)(unsigned int bus, unsigned int dev);
-	int (*read)(unsigned int bus, unsigned int dev, void *buf, unsigned long count);
-	int (*write)(unsigned int bus, unsigned int dev, const void *buf, unsigned long count);
-	int (*ioctl)(unsigned int bus, unsigned int dev, unsigned int request, unsigned long arg);
-	int (*close)(unsigned int bus, unsigned int dev);
+    unsigned int (*open)(unsigned int dev);
+    unsigned int (*read)(unsigned int dev, unsigned char *buf, unsigned long count);
+    unsigned int (*write)(unsigned int dev, const unsigned char *buf, unsigned long count);
+    unsigned int (*ioctl)(unsigned int dev, unsigned int request, unsigned long arg);
+    unsigned int (*close)(unsigned int dev);
+
+    unsigned int (*start)(unsigned int dev, const unsigned char * send_buffer, unsigned int send_size, unsigned char* recv_buffer, unsigned int recv_size);
+    unsigned int (*stop)(unsigned int dev);
+    unsigned char (*getchar)(unsigned int dev);
+    unsigned short (*getshort)(unsigned int dev);
+    unsigned long (*getlong)(unsigned int dev);
  };
 
 typedef struct driver {

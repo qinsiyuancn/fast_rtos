@@ -7,6 +7,10 @@ extern unsigned int bus_stop(unsigned int bus, unsigned int dev);
 
 extern unsigned char bus_getchar(unsigned int bus, unsigned int dev);
 
+extern unsigned short bus_getshort(unsigned int bus, unsigned int dev);
+
+extern unsigned long bus_getlong(unsigned int bus, unsigned int dev);
+
 extern unsigned int bus_send(unsigned int bus, unsigned int dev, const unsigned char * data, unsigned int size);
 
 extern unsigned int bus_recv(unsigned int bus, unsigned int dev, unsigned char * data, unsigned int size);
