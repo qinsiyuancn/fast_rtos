@@ -13,4 +13,14 @@ extern unsigned int driver_close(unsigned int driver, unsigned int dev);
 
 extern void driver_init(unsigned int driver);
 
+extern unsigned int driver_start(unsigned int driver, unsigned int dev, const unsigned char * send_buffer, unsigned int send_size, unsigned char* recv_buffer, unsigned int recv_size);
+
+extern unsigned int driver_stop(unsigned int driver, unsigned int dev);
+
+extern unsigned char driver_getchar(unsigned int driver, unsigned int dev);
+
+extern unsigned short driver_getshort(unsigned int driver, unsigned int dev);
+
+extern unsigned long driver_getlong(unsigned int driver, unsigned int dev);
+
 #endif

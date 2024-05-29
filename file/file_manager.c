@@ -70,6 +70,57 @@ unsigned int close(unsigned int fd)
 }
 
 /*
+ *
+ * @param fd
+ * @param send_buffer
+ * @param send_size
+ * @param recv_buffer
+ * @param recv_size
+ */
+
+unsigned int start(unsigned int fd, const unsigned char * send_buffer, unsigned int send_size, unsigned char* recv_buffer, unsigned int recv_size)
+{
+    return fd < sizeof(files) / sizeof(files[0]) ? driver_start(files[fd].driver, files[fd].device, send_buffer, send_size, recv_buffer, recv_size) : -1u;
+}
+
+/*
+ *
+ * @param fd
+ * @return
+ */
+unsigned int stop(unsigned int fd)
+{
+    return fd < sizeof(files) / sizeof(files[0]) ? driver_stop(files[fd].driver, files[fd].device) : -1u;
+}
+
+/*
+ * @param fd
+ * @return
+ */
+unsigned char getchar(unsigned int fd)
+{
+    return fd < sizeof(files) / sizeof(files[0]) ? driver_getchar(files[fd].driver, files[fd].device) : 0xff;
+}
+
+/*
+ * @param fd
+ * @return
+ */
+unsigned short getshort(unsigned int fd)
+{
+    return fd < sizeof(files) / sizeof(files[0]) ? driver_getshort(files[fd].driver, files[fd].device) : 0xffff;
+}
+
+/*
+ * @param fd
+ * @return
+ */
+unsigned long getlong(unsigned int fd)
+{
+    return fd < sizeof(files) / sizeof(files[0]) ? driver_getlong(files[fd].driver, files[fd].device) : -1ul;
+}
+
+/*
  * 
  */
 void init_files()

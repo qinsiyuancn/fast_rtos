@@ -50,6 +50,40 @@ extern unsigned int ioctl(unsigned int , unsigned int , unsigned long);
 extern unsigned int close(unsigned int );
 
 /*
+ * @param fd
+ * @param send_buffer
+ * @param send_size
+ * @param recv_buffer
+ * @param recv_size
+ * @return
+ */
+extern unsigned int start(unsigned int fd, const unsigned char * send_buffer, unsigned int send_size, unsigned char* recv_buffer, unsigned int recv_size);
+
+/*
+ * @param fd
+ * @return
+ */
+extern unsigned int stop(unsigned int fd);
+
+/*
+ * @param fd
+ * @return
+ */
+extern unsigned char getchar(unsigned int fd);
+
+/*
+ * @param fd
+ * @return
+ */
+extern unsigned short getshort(unsigned int fd);
+
+/*
+ * @param fd
+ * @return
+ */
+extern unsigned long getlong(unsigned int fd);
+
+/*
  * 
  */
 extern void init_files(void);
