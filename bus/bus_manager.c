@@ -25,6 +25,7 @@ unsigned short bus_getshort(unsigned int bus, unsigned int dev)
      * 先暂时用这个占个位置，后续用宏函数屏蔽差异
      */
     return bus_getchar(bus, dev) << sizeof(unsigned char) | bus_getchar(bus, dev);
+    // return bus_getchar(bus, dev) | bus_getchar(bus, dev) << sizeof(unsigned char);
 }
 
 unsigned long bus_getlong(unsigned int bus, unsigned int dev)
@@ -38,6 +39,7 @@ unsigned long bus_getlong(unsigned int bus, unsigned int dev)
      * 先暂时用这个占个位置，后续用宏函数屏蔽差异
      */
     return bus_getchar(bus, dev) << sizeof(unsigned short) | bus_getchar(bus, dev);
+    // return bus_getchar(bus, dev) | bus_getchar(bus, dev) << sizeof(unsigned short);
 }
 
 unsigned int bus_send(unsigned int bus, unsigned int dev, const unsigned char * data, unsigned int size)
