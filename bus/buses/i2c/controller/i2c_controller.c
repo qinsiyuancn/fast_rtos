@@ -12,7 +12,7 @@ static struct {
     struct i2c_session session;
 } bus[] = I2C_SESSION;
 
-static unsigned int stop(unsigned char fd, unsigned char state)
+unsigned int i2c_on_stop(unsigned char fd, unsigned char state)
 {
     FastRtosSemaphoreErrorCode error_code;
     if(fd < i2c_count())
@@ -28,22 +28,20 @@ static unsigned int stop(unsigned char fd, unsigned char state)
     return 1;
 }
 
-static int send_slave_addr(unsigned char fd, unsigned char state)
+unsigned char i2c_on_send_slave_addr(unsigned char fd, unsigned char state)
 {
     /* A Start condition is issued. */
-    bus[fd].i2cs.bus->I2DAT = bus[fd].session.address << 1 | getbit(bus[fd].session.state_bitmap, read) ;
-    bus[fd].i2cs.bus->I2CONCLR = (I2CONCLR_SIC | I2CONCLR_STAC);
-    return 0;
+    return bus[fd].session.address << 1 | getbit(bus[fd].session.state_bitmap, read);
 }
 
-static int send_data(unsigned char fd, unsigned char state)
+unsigned char i2c_on_send_data(unsigned char fd, unsigned char state)
 {
     if (bus[fd].session.session.send.buffer && (bus[fd].session.session.send.size > bus[fd].session.current)) {
+        clear_sic(fd);
 //    i2c_base_transport_finish(i2c_bus_manager, fd);
 //    I2CStop(fd);
         bus[fd].i2cs.bus->I2DAT = bus[fd].session.session.send.buffer[current++];
-        clear_sic(fd);
-        return 0;
+        return bus[fd].session.session.send.buffer[current++];
     }
     clrbit(bus[fd].session.state_bitmap, write);
     if(getbit(bus[fd].session.state_bitmap, read)) {
@@ -51,17 +49,11 @@ static int send_data(unsigned char fd, unsigned char state)
     } else {
         stop(fd, state);
     }
-    return 1;
+    return 0xff;
 }
 
-static int release_bus(unsigned char fd, unsigned char state)
-{
-    return clear_sic(fd);
-}
 
-static int (* const ack_set_list[])(unsigned char) = {set_nack, set_ack};
-
-static int recv_ready(unsigned char fd, unsigned char state)
+unsigned char i2c_on_recv_ready(unsigned char fd, unsigned char state)
 {
 /*    if(i2c_base_get_msg_size(i2c_bus_manager, fd) < 2){
         set_nack(fd);
@@ -69,10 +61,10 @@ static int recv_ready(unsigned char fd, unsigned char state)
         set_ack(fd);
     }
     return 0;*/
-    ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
+    return getbit(bus[fd].session.state_bitmap, ack);
 }
 
-static int recv_data(unsigned char fd, unsigned char state)
+unsigned char i2c_on_recv_data(unsigned char fd, unsigned char state, unsigned char data)
 {
     /*
     if (i2c_base_recv_char(i2c_bus_manager, fd, bus[fd]i2cs.bus->I2DAT) < 2) {
@@ -82,19 +74,19 @@ static int recv_data(unsigned char fd, unsigned char state)
     }
     */
     if (bus[fd].session.session.recv.buffer) {
-        bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
+        bus[fd].session.session.recv.buffer[bus[fd].session.current++] = data;
         if(fast_rtos_sem_enable(bus[fd].session.queue_size))fast_rtos_sem_post(bus[fd].session.queue_size);
         if (bus[fd].session.current == 2)
             clrbit(fd, ack);
     }
-    ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
-    return 0;
+    return getbit(bus[fd].session.state_bitmap, ack);
 }
-static int recv_last_data(unsigned char fd, unsigned char state)
+
+unsigned int i2c_on_recv_last_data(unsigned char fd, unsigned char state, unsigned char data)
 {
     // i2c_base_recv_char(i2c_bus_manager, fd, bus[fd]i2cs.bus->I2DAT);
     if (bus[fd].session.session.recv.buffer) {
-        bus[fd].session.session.recv.buffer[bus[fd].session.current] = bus[fd]i2cs.bus->I2DAT;
+        bus[fd].session.session.recv.buffer[bus[fd].session.current] = data;
     }
     stop(fd, state);
     return 0;
