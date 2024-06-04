@@ -24,12 +24,11 @@ struct i2c_config
 
 struct i2c_session
 {
-    const struct config config;
-    struct bus_session session;
-    unsigned char address;
     unsigned char state_bitmap;
+    unsigned char address;
     unsigned char buffer_default[0xff];
     unsigned int current;
+    struct bus_session session;
     FastRtosSemaphore queue_size;
 };
 
