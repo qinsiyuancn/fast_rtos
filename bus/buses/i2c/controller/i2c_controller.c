@@ -40,7 +40,7 @@ unsigned char i2c_on_send_data(unsigned char fd, unsigned char state)
         clear_sic(fd);
 //    i2c_base_transport_finish(i2c_bus_manager, fd);
 //    I2CStop(fd);
-        bus[fd].i2cs.bus->I2DAT = bus[fd].session.session.send.buffer[current++];
+//        bus[fd].i2cs.bus->I2DAT = bus[fd].session.session.send.buffer[current++];
         return bus[fd].session.session.send.buffer[current++];
     }
     clrbit(bus[fd].session.state_bitmap, write);
