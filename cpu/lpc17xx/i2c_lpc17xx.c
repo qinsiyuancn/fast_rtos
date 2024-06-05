@@ -6,6 +6,7 @@
  */
 #include "i2c_lpc17xx.h"
 #include "i2c_mode.h"
+#include "i2c_adapter.h"
 
 #if CPU_lpc17xx
 
