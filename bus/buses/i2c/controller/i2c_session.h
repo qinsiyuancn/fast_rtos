@@ -3,11 +3,6 @@
 
 #include "bus_session.h"
 
-enum i2c_mode
-{
-    slave,
-    master
-};
 
 enum state_bit
 {

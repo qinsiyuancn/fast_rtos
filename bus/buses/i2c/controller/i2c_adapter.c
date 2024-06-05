@@ -4,6 +4,7 @@
  * 		on 2016-6-29
  */
 
+#include "i2c_adapter.h"
 #include "i2c_session.h"
 #define i2c_count() (sizeof(bus)/sizeof(bus[0]))
 
