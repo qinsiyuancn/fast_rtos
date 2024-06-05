@@ -1,90 +1,80 @@
 /*
  * i2c_lpc17xx.c
  * created by qinsiyuan
- * 		on 2016-6-29
- * i2cÓëcpuÏà¹Ø²¿·ÖÇý¶¯
+ *     on 2016-6-2
+ * i2cä¸Žcpuç›¸å…³é©±åŠ¨éƒ¨åˆ†
  */
 #include "i2c_lpc17xx.h"
-#include "i2c_bus.h"
 
 #if CPU_lpc17xx
-// static const struct i2c_s i2cs[] = I2C_A;
-static struct {
-    const struct i2c_s i2cs;
-    struct i2c_session session;
-} bus[] = I2C_A;
+    static const struct i2c_s bus[] = I2C_A;
 
-static unsigned int bus_stop( unsigned char fd ) 
+unsigned int cpu_i2c_stop(unsigned char fd)
 {
-    bus[fd].i2cs.bus->I2CONSET = I2CONSET_STO;  /* Set Stop flag */
-    bus[fd].i2cs.bus->I2CONCLR = I2CONCLR_SIC;  /* Clear SI flag */
-    /*--- Wait for STOP detected ---*/
-    //  while( i2cs[fd].bus->I2CONSET & I2CONSET_STO );
-    return TRUE;
+    if (fd < (sizeof(bus)/sizeof(bus[0]))) {
+        bus[fd].bus->I2CONSET = I2CONSET_STO;  /* Set Stop flag */
+        bus[fd].bus->I2CONCLR = I2CONCLR_SIC;  /* Clear SI flag */
+        /*--- Wait for STOP detected ---*/
+        //  while( i2cs[fd].bus->I2CONSET & I2CONSET_STO );
+        return TRUE;
+	}
+	return FALSE;
 }
 
-static int clear_sic(unsigned char fd)
+unsigned int cpu_i2c_clear_sic(unsigned char fd)
 {
-    bus[fd].i2cs.bus->I2CONCLR = I2CONCLR_SIC;
+    if (fd < (sizeof(bus)/sizeof(bus[0]))) {
+        bus[fd].bus->I2CONCLR = I2CONCLR_SIC;
+	}
     return 0;
 }
 
-static unsigned int stop(unsigned char fd, unsigned char state)
+static int stop(unsigned char fd, unsigned char state)
 {
-    FastRtosSemaphoreErrorCode error_code;
-    if(fd < i2c_count())
-        if(bus_stop(fd)) {
-            bus[fd].session.session.recv.buffer = NULL;
-            bus[fd].session.session.recv.size = 0;
-            bus[fd].session.session.send.buffer = NULL;
-            bus[fd].session.session.send.size = 0;
-            fast_rtos_sem_post(bus[fd].session.session.ctrl.finish);
-            fast_rtos_mutex_unlock(bus[fd].session.session.ctrl.usingbus);
-	    fast_rtos_sem_deinit(bus[fd].session.queue_size, error_code);
-        }
+    i2c_on_stop(fd, state);
     return 1;
 }
 
 static int set_ack(unsigned char fd)
 {
-    bus[fd].i2cs.bus->I2CONSET = I2CONSET_AA;	/* assert ACK after data is received */
-    return clear_sic(fd);
+    if (fd < (sizeof(bus)/sizeof(bus[0]))) {
+        bus[fd].i2cs.bus->I2CONSET = I2CONSET_AA;	/* assert ACK after data is received */
+        return clear_sic(fd);
+	}
+	return FALSE;
 }
 
 static int set_nack(unsigned char fd)
 {
-    bus[fd].i2cs.bus->I2CONCLR = I2CONCLR_SIC |I2CONCLR_AAC;
-    return 0;
+    if (fd < (sizeof(bus)/sizeof(bus[0])))
+        bus[fd].i2cs.bus->I2CONCLR = I2CONCLR_SIC |I2CONCLR_AAC;
+    return TRUE;
 }
 
 static int send_slave_addr(unsigned char fd, unsigned char state)
 {
-	/* A Start condition is issued. */
-    bus[fd].i2cs.bus->I2DAT = bus[fd].session.address << 1 | getbit(bus[fd].session.state_bitmap, read) ;
-    bus[fd].i2cs.bus->I2CONCLR = (I2CONCLR_SIC | I2CONCLR_STAC);
-    return 0;
+    if (fd < (sizeof(bus)/sizeof(bus[0]))) {
+	    /* A Start condition is issued. */
+        bus[fd].i2cs.bus->I2DAT = i2c_on_send_slave_addr(fd, state) ;
+        bus[fd].i2cs.bus->I2CONCLR = (I2CONCLR_SIC | I2CONCLR_STAC);
+		return TRUE;
+	}
+    return FALSE;
 }
 
 static int send_data(unsigned char fd, unsigned char state)
 {
-    if (bus[fd].session.session.send.buffer && (bus[fd].session.session.send.size > bus[fd].session.current)) {
-//    i2c_base_transport_finish(i2c_bus_manager, fd);
-//    I2CStop(fd);
-        bus[fd].i2cs.bus->I2DAT = bus[fd].session.session.send.buffer[current++];
+    if (fd < (sizeof(bus)/sizeof(bus[0]))) {
+        bus[fd].i2cs.bus->I2DAT = i2c_on_send_data(fd,state);
         clear_sic(fd);
-        return 0;
+        return TRUE;
     }
-    clrbit(bus[fd].session.state_bitmap, write);
-    if(getbit(bus[fd].session.state_bitmap, read)) {
-        start(fd);
-    } else {
-        stop(fd, state);
-    }
-    return 1;
+    return FALSE;
 }
 
 static int release_bus(unsigned char fd, unsigned char state)
 {
+
     return clear_sic(fd);
 }
 
@@ -98,38 +88,25 @@ static int recv_ready(unsigned char fd, unsigned char state)
         set_ack(fd);
     }
     return 0;*/
-    ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
+    if (fd < (sizeof(bus)/sizeof(bus[0])))
+        return ack_set_list[i2c_on_recv_ready(fd, state)](fd);
+	return FALSE;
 }
 
 static int recv_data(unsigned char fd, unsigned char state)
 {
-    /*
-    if (i2c_base_recv_char(i2c_bus_manager, fd, bus[fd]i2cs.bus->I2DAT) < 2) {
-        set_nack(fd);
-    }else{
-        set_ack(fd);
-    }
-    */
-    if (bus[fd].session.session.recv.buffer) {
-        bus[fd].session.session.recv.buffer[bus[fd].session.current++] = bus[fd]i2cs.bus->I2DAT;
-        if(fast_rtos_sem_enable(bus[fd].session.queue_size))fast_rtos_sem_post(bus[fd].session.queue_size);
-        if (bus[fd].session.current == 2)
-            clrbit(fd, ack);
-    }
-    ack_set_list[getbit(bus[fd].session.state_bitmap, ack)](fd);
-    return 0;
+    if (fd < (sizeof(bus)/sizeof(bus[0])))
+        return ack_set_list[i2c_on_recv_data(fd, state, bus[fd].bus->I2DAT), ack](fd);
+    return FALSE;
 }
 static int recv_last_data(unsigned char fd, unsigned char state)
 {
-    // i2c_base_recv_char(i2c_bus_manager, fd, bus[fd]i2cs.bus->I2DAT);
-    if (bus[fd].session.session.recv.buffer) {
-        bus[fd].session.session.recv.buffer[bus[fd].session.current] = bus[fd]i2cs.bus->I2DAT;
-    }
-    stop(fd, state);
-    return 0;
+    if (fd < (sizeof(bus)/sizeof(bus[0])))
+	    return i2c_on_recv_last_data(fd, state, bus[fd]i2cs.bus->I2DAT);
+    return FALSE;
 }
 
-static unsigned int start(unsigned char fd)
+unsigned int cpu_i2c_start(unsigned char fd)
 {
     if(fd >= i2c_count())return 1;
     /*--- Issue a start condition ---*/
@@ -138,140 +115,25 @@ static unsigned int start(unsigned char fd)
     return 0;
 }
 
-unsigned char i2c_getchar(unsigned char fd)
-{
-    unsigned int current = 0;
-    unsigned int count = 0;
-    if (fd < i2c_count) {
-        if (fast_rtos_sem_enable(bus[fd].session.queue_size)) {
-            fast_rtos_sem_wait(bus[fd].session.queue_size);
-            do{
-                clrbit(bus[fd].session.state_bitmap, interrupted);
-                current = bus[fd].session.current;
-                fast_rtos_sem_get_count(count, bus[fd].session.queue_size);
-            }while(getbit(bus[fd].session.state_bitmap, interrupted));
-            return bus[fd].session.session.recv.buffer[current - count - 1];
-	}
-    }
-    return 0;
-}
 
-unsigned int i2c_send_recv(unsigned char fd, unsigned char addr, unsigned char * send_data, unsigned int send_size, unsigned char recv_data, unsigned int recv_size)
-{
-    FastRtosSemaphoreErrorCode error_code;
-    if (fd < i2c_count) {
-        if (send_data && send_size && recv_data && recv_size) {
-            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
-            bus[fd].session.session.send.buffer = send_buffer;
-            bus[fd].session.session.send.size = send_size;
-            setbit(bus[fd].session.state_bitmap, write);
 
-            bus[fd].session.session.recv.buffer = recv_buffer;
-	    bus[fd].session.session.recv.size = recv_size;
-            setbit(bus[fd].session.state_bitmap, read);
-
-            bus[fd].session.address = addr;
-            bus[fd].session.current = 0;
-            recv_size < 2 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
-            start(fd);
-            fast_rtos_sem_wait(bus[fd].session.session.ctrl.finish);
-	}
-	return 2;
-    }
-    return 1;
-}
-
-unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data, unsigned int size)
-{
-    FastRtosSemaphoreErrorCode error_code;
-    if(fd < i2c_count()) {
-        if(data && size){
-            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
-            bus[fd].session.session.recv.buffer = data;
-            bus[fd].session.session.recv.size = size;
-            bus[fd].session.address = addr;
-            size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
-            setbit(bus[fd].session.state_bitmap, read);
-            bus[fd].session.current = 0;
-            start(fd);
-            fast_rtos_sem_wait(bus[fd].session.session.ctrl.finish);
-            return 0;
-        }
-        return 2;
-    }
-    return 1;
-}
-
-unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char * data, unsigned int size)
-{
-    
-    FastRtosSemaphoreErrorCode error_code;
-    if(fd < i2c_count()){
-        if (data && size) {
-            fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
-            bus[fd].session.session.send.buffer = data;
-            bus[fd].session.session.send.size = size;
-            bus[fd].session.address = addr;
-            size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
-            setbit(bus[fd].session.state_bitmap, write);
-            bus[fd].session.current = 0;
-            start(fd);
-            fast_rtos_sem_wait(bus[fd].session.session.ctrl.finish);
-            return 0;
-        }
-        return 2;
-    }
-    return 1;
-}
-
-unsigned int i2c_stop(unsigned char fd)
-{
-    if(fd >= i2c_count())return 1;
-    clrbit(bus[fd].session.state_bitmap, setAck);
-    return 0;
-}
-
-unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned char * send_buffer, unsigned int send_size, unsigned char * recv_buffer, unsigned int recv_size)
-{
-    FastRtosSemaphoreErrorCode error_code;
-    if(fd >= i2c_count())return 1;
-    fast_rtos_mutex_lock(bus[fd].session.session.ctrl.usingbus, error_code);
-    if(send_buffer && send_size){
-        bus[fd].session.session.send.buffer = send_buffer;
-        bus[fd].session.session.send.size = send_size;
-        setbit(bus[fd].session.state_bitmap, write);
-    }
-    if(bus[fd].session.session.recv.buffer && recv_size){
-        bus[fd].session.session.recv.buffer = recv_buffer;
-	bus[fd].session.session.recv.size = recv_size;
-    }else{
-        bus[fd].session.session.recv.buffer = bus[fd].session.default_buffer;
-	bus[fd].session.session.recv.size = sizeof(bus[fd].session.default_buffer) / sizeof(bus[fd].session.default_buffer[0]);
-    }
-    bus[fd].session.address = addr;
-    bus[fd].session.current = 0;
-    recv_size <= 1 ? clrbit(bus[fd].session.state_bitmap, setAck) : setbit(bus[fd].session.state_bitmap, setAck);
-    setbit(bus[fd].session.state_bitmap, read);
-    fast_rtos_sem_init(bus[fd].session.queue_size, recv_size);
-    return start(fd);
-}
 
 void I2C_IRQHandler(unsigned char fd)
 {
     static irq_funp const handler_state[0x20] = {
-        /*0x00 ÓÉÓÚ·Ç·¨ÆðÊ¼»òÍ£Ö¹Ìõ¼þµÄ³öÏÖ£¬ÔÚMST»òÑ¡ÔñµÄ´Ó»úÄ£Ê½ÖÐ½«³öÏÖ×ÜÏß´íÎó¡£			 
-            µ±Íâ²¿¸ÉÈÅÊ¹I2C Ä£¿é½øÈëÎ´¶¨ÒåµÄ×´Ì¬Ê±Ò²³öÏÖ0x00×´Ì¬*/  NULL, 	  
-        /*0x08 ÒÑ·¢ËÍÆðÊ¼Ìõ¼þ*/                                     send_slave_addr,  
-        /*0x10 ÒÑ·¢ËÍÖØ¸´µÄÆðÊ¼Ìõ¼þ*/                               send_slave_addr, 
-        /*0x18 ÒÑ·¢ËÍSLA+W£¬ÒÑ½ÓÊÕACK*/                             send_data,
-        /*0x20 ÒÑ·¢ËÍSLA+W£¬ÒÑ½ÓÊÕ·ÇACK*/                           stop,
-        /*0x28 ÒÑ·¢ËÍI2DATÖÐµÄÊý¾Ý×Ö½Ú£¬ÒÑ½ÓÊÕACK*/                 send_data,	
-        /*0x30 ÒÑ·¢ËÍI2DATÖÐµÄÊý¾Ý×Ö½Ú£¬ÒÑ½ÓÊÕ·ÇACK*/               stop,
-        /*0x38 ÔÚSLA+R/W»òÊý¾Ý×Ö½ÚÖÐ¶ªÊ§ÖÙ²Ã£¬ÔÚ·ÇACKÎ»ÖÐ¶ªÊ§ÖÙ²Ã*/ release_bus,
-        /*0x40 ÒÑ·¢ËÍSLA+R£¬ÒÑ½ÓÊÕACK*/                             recv_ready,
-        /*0x48 ÒÑ·¢ËÍSLA+R£¬ÒÑ½ÓÊÕ·ÇACK*/                           stop,
-        /*0x50 ÒÑ½ÓÊÕÊý¾Ý×Ö½Ú£¬ACKÒÑ·µ»Ø*/                          recv_data,	
-        /*0x58 ÒÑ½ÓÊÕÊý¾Ý×Ö½Ú£¬·ÇACKÒÑ·µ»Ø*/                        recv_last_data,
+    /*0x00 ç”±äºŽéžæ³•èµ·å§‹æˆ–åœæ­¢æ¡ä»¶çš„å‡ºçŽ°ï¼Œåœ¨MSTæˆ–é€‰æ‹©çš„ä¸›é›†æ¨¡å¼ä¸­å‡ºçŽ°æ€»çº¿é”™è¯¯ã€‚
+	       å½“å¤–éƒ¨å¹²æ‰°ä½¿I2C æ¨¡å—è¿›å…¥æœªå®šä¹‰çš„çŠ¶æ€æ—¶ä¹Ÿå‡ºçŽ°0x00çŠ¶æ€*/     NULL,
+	/*0x08 å·²å‘é€èµ·å§‹æ¡ä»¶*/                                           send_slave_addr,
+	/*0x10 å·²å‘é€é‡å¤çš„èµ·å§‹æ¡ä»¶*/                                     send_slave_addr,
+	/*0x18 å·²å‘é€SLA+W, å·²æŽ¥æ”¶ACK*/                                   send_data,
+	/*0x20 å·²å‘é€SLA+W, å·²æŽ¥æ”¶éžACK(nack)*/                           stop,
+	/*0x28 å·²å‘é€I2DATä¸­çš„æ•°æ®å­—èŠ‚ï¼Œå·²æŽ¥æ”¶ACK*/                       send_data,
+	/*0x30 å·²å‘é€I2DATä¸­çš„æ•°æ®å­—èŠ‚ï¼Œå·²æŽ¥æ”¶éžACK(nack)*/               stop,
+	/*0x38 åœ¨SLA+R/Wæˆ–æ•°æ®å­—èŠ‚ä¸­ä¸¢å¤±ä»²è£ï¼Œåœ¨éžACK(nack)ä½ä¸­ä¸¢å¤±ä»²è£*/ release_bus,
+	/*0x40 å·²å‘é€SLA+R, å·²æŽ¥æ”¶ACK*/                                   recv_ready,
+	/*0x48 å·²å‘é€SLA+R, å·²æŽ¥æ”¶éžACK(nack)*/                           stop,
+	/*0x50 å·²æŽ¥æ”¶æ•°æ®å­—èŠ‚ï¼Œå·²è¿”å›žACK*/                                recv_data,
+	/*0x58 å·²æŽ¥æ”¶æ•°æ®å­—èŠ‚ï¼Œå·²è¿”å›žéžACK(nack)*/                        recv_last_data,
     };
 
     const unsigned char state = (bus[fd].i2cs.bus->I2STAT) >> 3;
@@ -283,8 +145,8 @@ void I2C_IRQHandler(unsigned char fd)
 
 static void set_mode_slave(unsigned int fd)
 {
-    //bus[fd].i2cs.bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (bus[fd].i2cs.bus->I2ADR0 & 1);//Ö»¸ÄµØÖ·£¬²»¸ÄÍ¨ÓÃÊ¹ÄÜÎ»
-    bus[fd].i2cs.bus->I2ADR0 = bus[fd].session.address << 1 | (bus[fd].i2cs.bus->I2ADR0 & 1);//Ö»¸ÄµØÖ·£¬²»¸ÄÍ¨ÓÃÊ¹ÄÜÎ»
+    //bus[fd].i2cs.bus->I2ADR0 = (i2c_base_get_addr(i2c_bus_manager, fd) & 0xfe) | (bus[fd].i2cs.bus->I2ADR0 & 1);
+    bus[fd].i2cs.bus->I2ADR0 = bus[fd].session.address << 1 | (bus[fd].i2cs.bus->I2ADR0 & 1); // åªæ”¹åœ°å€ï¼Œä¸æ”¹é€šç”¨ä½¿èƒ½ä½
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN | I2CONSET_AA;
 }
 
@@ -293,7 +155,7 @@ static void set_mode_master(unsigned int fd)
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN;
 }
 
-int i2c_bus_init(unsigned char fd)
+unsigned int cpu_i2c_init(unsigned char fd)
 {
     static void (* const set_mode[])(unsigned int) = {set_mode_slave, set_mode_master};
     FastRtosSemaphoreErrorCode error_code;
@@ -316,16 +178,6 @@ int i2c_bus_init(unsigned char fd)
 
     set_mode[bus[fd].config.mode](fd);
     return 0;
-}
-
-int i2c_bus_init_all()
-{
-    unsigned int ret = 0;
-    unsigned char i = 0;
-    while(i < (sizeof(bus)/sizeof(bus[0]))) {
-        ret = ret || i2c_bus_init(i++);
-    }
-    return ret;
 }
 
 // static const struct i2c_manager_s i2c_manager = {(sizeof(i2cs)/sizeof(i2cs[0])), i2c_bus_init, i2c_work, I2CStop, I2C_IRQHandler, &i2c_listener};
