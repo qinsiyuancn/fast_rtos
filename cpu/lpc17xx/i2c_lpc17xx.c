@@ -6,8 +6,10 @@
  */
 #include "i2c_lpc17xx.h"
 
+
 #if CPU_lpc17xx
-    static const struct i2c_s bus[] = I2C_A;
+
+static const struct i2c_s bus[] = I2C_A;
 
 unsigned int cpu_i2c_stop(unsigned char fd)
 {
@@ -17,8 +19,8 @@ unsigned int cpu_i2c_stop(unsigned char fd)
         /*--- Wait for STOP detected ---*/
         //  while( i2cs[fd].bus->I2CONSET & I2CONSET_STO );
         return TRUE;
-	}
-	return FALSE;
+    }
+    return FALSE;
 }
 
 unsigned int cpu_i2c_clear_sic(unsigned char fd)
@@ -155,13 +157,10 @@ static void set_mode_master(unsigned int fd)
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN;
 }
 
-unsigned int cpu_i2c_init(unsigned char fd)
+unsigned int cpu_i2c_init(unsigned char fd, unsigned char mode)
 {
     static void (* const set_mode[])(unsigned int) = {set_mode_slave, set_mode_master};
-    FastRtosSemaphoreErrorCode error_code;
     if(fd >= i2c_count())return 1;
-    fast_rtos_sem_init(bus[fd].session.session.ctrl.finish, 0);
-    fast_rtos_lock_init(bus[fd].session.session.ctrl.usingbus, 0, error_code)
     LPC_SC->PCONP |= (1 << bus[fd].i2cs.pconp);
 
     *(bus[fd].i2cs.pin.pin_p) |= bus[fd].i2cs.pin.pin_v;
@@ -176,7 +175,7 @@ unsigned int cpu_i2c_init(unsigned char fd)
     /* Install interrupt handler */
     NVIC_EnableIRQ(I2C0_IRQn + fd);
 
-    set_mode[bus[fd].config.mode](fd);
+    set_mode[mode % (sizeof(set_mode) / sizeof(set_mode[0]))](fd);
     return 0;
 }
 
