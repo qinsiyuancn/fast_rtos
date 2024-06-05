@@ -5,7 +5,7 @@
  * i2c与cpu相关驱动部分
  */
 #include "i2c_lpc17xx.h"
-
+#include "i2c_mode.h"
 
 #if CPU_lpc17xx
 
@@ -157,7 +157,7 @@ static void set_mode_master(unsigned int fd)
     bus[fd].i2cs.bus->I2CONSET = I2CONSET_I2EN;
 }
 
-unsigned int cpu_i2c_init(unsigned char fd, unsigned char mode)
+unsigned int cpu_i2c_init(unsigned char fd, enum i2c_mode mode)
 {
     static void (* const set_mode[])(unsigned int) = {set_mode_slave, set_mode_master};
     if(fd >= i2c_count())return 1;
