@@ -1,5 +1,5 @@
-#include "i2c_adapter.h"
 #include "i2c.h"
+#include "i2c_adapter.h"
 #include "i2c_dev.h"
 #define dev_size (sizeof(device_list) / sizeof(device_list[0]))
 
