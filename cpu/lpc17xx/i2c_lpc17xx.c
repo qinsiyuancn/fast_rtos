@@ -124,19 +124,19 @@ unsigned int cpu_i2c_start(unsigned char fd)
 void I2C_IRQHandler(unsigned char fd)
 {
     static irq_funp const handler_state[0x20] = {
-    /*0x00 由于非法起始或停止条件的出现，在MST或选择的丛集模式中出现总线错误。
-	       当外部干扰使I2C 模块进入未定义的状态时也出现0x00状态*/     NULL,
-	/*0x08 已发送起始条件*/                                           send_slave_addr,
-	/*0x10 已发送重复的起始条件*/                                     send_slave_addr,
-	/*0x18 已发送SLA+W, 已接收ACK*/                                   send_data,
-	/*0x20 已发送SLA+W, 已接收非ACK(nack)*/                           stop,
-	/*0x28 已发送I2DAT中的数据字节，已接收ACK*/                       send_data,
-	/*0x30 已发送I2DAT中的数据字节，已接收非ACK(nack)*/               stop,
-	/*0x38 在SLA+R/W或数据字节中丢失仲裁，在非ACK(nack)位中丢失仲裁*/ release_bus,
-	/*0x40 已发送SLA+R, 已接收ACK*/                                   recv_ready,
-	/*0x48 已发送SLA+R, 已接收非ACK(nack)*/                           stop,
-	/*0x50 已接收数据字节，已返回ACK*/                                recv_data,
-	/*0x58 已接收数据字节，已返回非ACK(nack)*/                        recv_last_data,
+        /*0x00 由于非法起始或停止条件的出现，在MST或选择的丛集模式中出现总线错误。
+               当外部干扰使I2C 模块进入未定义的状态时也出现0x00状态*/     NULL,
+        /*0x08 已发送起始条件*/                                           send_slave_addr,
+        /*0x10 已发送重复的起始条件*/                                     send_slave_addr,
+        /*0x18 已发送SLA+W, 已接收ACK*/                                   send_data,
+        /*0x20 已发送SLA+W, 已接收非ACK(nack)*/                           stop,
+        /*0x28 已发送I2DAT中的数据字节，已接收ACK*/                       send_data,
+        /*0x30 已发送I2DAT中的数据字节，已接收非ACK(nack)*/               stop,
+        /*0x38 在SLA+R/W或数据字节中丢失仲裁，在非ACK(nack)位中丢失仲裁*/ release_bus,
+        /*0x40 已发送SLA+R, 已接收ACK*/                                   recv_ready,
+        /*0x48 已发送SLA+R, 已接收非ACK(nack)*/                           stop,
+        /*0x50 已接收数据字节，已返回ACK*/                                recv_data,
+        /*0x58 已接收数据字节，已返回非ACK(nack)*/                        recv_last_data,
     };
 
     const unsigned char state = (bus[fd].i2cs.bus->I2STAT) >> 3;
