@@ -1,11 +1,12 @@
 /*
- * i2c_lpc17xx.c
+ * i2c_adapter.c
  * created by qinsiyuan
  * 		on 2016-6-29
  */
 
 #include "i2c_adapter.h"
 #include "i2c_session.h"
+#include "i2c_cpu.h"
 #define i2c_count() (sizeof(bus)/sizeof(bus[0]))
 
 static struct {
@@ -159,7 +160,6 @@ unsigned int i2c_recv(unsigned char fd, unsigned char addr, unsigned char * data
 
 unsigned int i2c_send(unsigned char fd, unsigned char addr, const unsigned char * data, unsigned int size)
 {
-    
     FastRtosSemaphoreErrorCode error_code;
     if(fd < i2c_count()){
         if (data && size) {
