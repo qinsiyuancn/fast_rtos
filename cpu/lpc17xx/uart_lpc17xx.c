@@ -17,26 +17,21 @@ static const struct {
         volatile uint32_t * const selector_p;
         const unsigned int selector_v;
     }pin;
-    const struct {
-        const volatile uint32_t * pointer;
-        const unsigned int pos;	
-    }pclock;
 }uart_bus[] = UART_BUS_INIT;
 
 static int irq_IIR_THRE(unsigned char fd, unsigned char state)
 {
     volatile unsigned char LSRValue = uart_bus[fd].bus_register->LSR;	
     if ( LSRValue & LSR_THRE ){
-        //·¢ËÍ×èÈû·ÅÐÐ
-        uart_base_transport_finish(uart_bus_manager_pointer, fd);	
+        //å‘é€é˜»å¡žæ”¾è¡Œ
+        return uart_on_transport_finish(uart_bus_manager_pointer, fd);	
     }
     return 0;
 }
 
 static int irq_IIR_RDA(unsigned char fd, unsigned char state)
 {
-    uart_base_recv_char(uart_bus_manager_pointer ,fd , uart_bus[fd].bus_register->RBR );
-    return 0;	
+    return uart_on_recv_char(uart_bus_manager_pointer ,fd , uart_bus[fd].bus_register->RBR );	
 }
 
 static int irq_IIR_RLS(unsigned char fd, unsigned char state)
@@ -60,7 +55,7 @@ static int irq_IIR_RLS(unsigned char fd, unsigned char state)
 
 void uart_irq_handler(unsigned char fd)
 {
-    static const irq_funp request_irq[6] = {NULL,irq_IIR_THRE,irq_IIR_RDA, irq_IIR_RLS};
+    static irq_funp const request_irq[6] = {NULL,irq_IIR_THRE,irq_IIR_RDA, irq_IIR_RLS};
     const uint32_t state = (uart_bus[fd].bus_register->IIR >> 1) & 0x07;
     if(request_irq[state])
         request_irq[state](fd, state);
@@ -79,7 +74,7 @@ void uart_irq_handler(unsigned char fd)
 **						VIC table
 ** 
 *****************************************************************************/
-int uart_bus_init( unsigned char fd, unsigned long baudrate )
+int cpu_uart_init( unsigned char fd, unsigned long baudrate )
 {
     static const unsigned char div[] = {4,1,2,8};
     uint32_t Fdiv;
@@ -104,7 +99,7 @@ int uart_bus_init( unsigned char fd, unsigned long baudrate )
 }
 
 /*****************************************************************************
-** Function name:		UARTSend
+** Function name:		cpu_uart_send/UARTSend
 **
 ** Descriptions:		Send a block of data to the UART 0 port based
 **						on the data length
@@ -113,21 +108,12 @@ int uart_bus_init( unsigned char fd, unsigned long baudrate )
 ** Returned value:		None
 ** 
 *****************************************************************************/
-static unsigned char UARTSend( unsigned char fd, char c)
+unsigned char cpu_uart_send( unsigned char fd, unsigned char c)
 {
     uart_bus[fd].bus_register->THR = c;
     return 0;
 }
 
-static const struct uart_manager_s uart_manager = {
-    sizeof(uart_bus)/sizeof(uart_bus[0]),
-    UARTInit,
-    UARTSend, 
-    uart_irq_handler, 
-    &uart_listener
-};
-
-// const struct uart_manager_s * const uart_bus_manager_pointer = &uart_manager;
 #endif
 /******************************************************************************
 **                            End Of File
