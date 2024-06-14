@@ -9,6 +9,7 @@ typedef void  (*FastRtosFun) (void *p_arg);
 typedef OS_STK FastRtosStackBuffer;
 typedef unsigned int FastRtosStackSize;
 typedef INT8U FastRtosPriority;
+typedef INT8U ErrorCode;
 
 #define fast_rtos_task_create(task) OSTaskCreate(task->fun, (void*)0, task->stack.pointer + task->stack.size - 1, task->priority)
 
@@ -21,7 +22,7 @@ typedef INT8U FastRtosSemaphoreErrorCode;
 #define fast_rtos_sem_wait(semphore) OSSemPend(semphore)
 #define fast_rtos_sem_try(semphore)  OSSemAccept(semphore)
 #define fast_rtos_sem_deinit(semphore, error_code) do {\
-        OSSemDel(semphore, OS_DEL_ALWAYS, &error_code);\
+        OSSemDel(semphore, OS_DEL_ALWAYS, error_code);\
         semphore = NULL;\
     }while(0)
 
