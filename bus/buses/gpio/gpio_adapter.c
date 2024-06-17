@@ -3,7 +3,7 @@
 #include "gpio.h"
 #define dev_size (sizeof(device_list) / sizeof(device_list[0]))
 
-static  struct gpio_device device_list[] = I2C_DEV_LIST;
+static struct gpio_device device_list[] = I2C_DEV_LIST;
 
 static unsigned char getchar(unsigned int dev)
 {
