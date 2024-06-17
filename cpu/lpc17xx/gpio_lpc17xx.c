@@ -2,12 +2,11 @@
  * gpio_lpc17xx.c
  * create by qinsiyuan
  *			on 2016-7-8
- * 与lpc17xx芯片相关驱动
  */
 #include "gpio_lpc17xx.h"
 
 #if CPU_lpc17xx
-static LPC_GPIO_TypeDef * gpio_s [] = GPIO_A;
+static LPC_GPIO_TypeDef * gpio_s [] = GPIO_PORT_LIST;
 
 void set_gpio_on(unsigned char port, unsigned int mask)
 {
@@ -42,14 +41,11 @@ unsigned int get_gpio(unsigned char port, unsigned int mask)
 
 void gpio_IRQHandler()
 {
-    //判断发生中断的引脚，调用回调函数
 }
 
 void GpioIntInit(void)
 {
-//  LPC_GPIO0->FIODIR &= ~(0x1 << 29);	   // gpio方向为输入
-//  LPC_GPIOINT->IO0IntEnF |= 0x1 << 29;   // 下降沿使能	
-    NVIC_EnableIRQ(EINT3_IRQn);  	
+    NVIC_EnableIRQ(EINT3_IRQn);
 }
 
 #endif
