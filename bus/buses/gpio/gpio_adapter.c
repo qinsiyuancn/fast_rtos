@@ -3,7 +3,7 @@
 #include "gpio.h"
 #define dev_size (sizeof(device_list) / sizeof(device_list[0]))
 
-static struct gpio_device device_list[] = I2C_DEV_LIST;
+static struct gpio_device device_list[] = GPIO_DEV_LIST;
 
 static unsigned char getchar(unsigned int dev)
 {
@@ -38,8 +38,10 @@ static unsigned int recv(unsigned int dev, unsigned char * data, unsigned int si
 static unsigned int send_recv(unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size)
 {
     if(dev < dev_size) {
-        send(send_data, send_size);
-        return recv(recv_data, recv_size);
+        if(send_data && send_size)
+            send(send_data, send_size);
+        if(recv_data, recv_size)
+            return recv(recv_data, recv_size);
     }
     return 0;
 }
