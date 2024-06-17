@@ -6,7 +6,7 @@
 		#include "gpio_bus.h"
 		
 			/*
-			 * GPIOµÿ÷∑
+			 * GPIOÂú∞ÂùÄ
 			 */ 
 		 	#define GPIO_A {\
 				LPC_GPIO0,	\
