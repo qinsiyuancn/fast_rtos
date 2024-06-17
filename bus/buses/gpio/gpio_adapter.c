@@ -21,7 +21,7 @@ static unsigned int send(unsigned int dev, const unsigned char * data, unsigned 
     if(dev < dev_size)
         if(data && size > 1) {
             if(data[0] < (sizeof(set_gpio_operation)/sizeof(set_gpio_operation[0])))
-                return gpio_send(device_list[dev].port, 0x1 << device_list[dev].offset, data[1]);
+                return set_gpio_operation[data[0]](device_list[dev].port, 0x1 << device_list[dev].offset, data[1]);
     return 0;
 }
 static unsigned int recv(unsigned int dev, unsigned char * data, unsigned int size)
