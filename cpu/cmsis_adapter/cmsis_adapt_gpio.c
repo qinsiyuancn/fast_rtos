@@ -6,6 +6,7 @@
 
 #include "cmsis_adapt_clk.h"
 #include "cmsis_adapt_nvic.h"
+#include "stm32f4xx_hal_gpio.h"
 
 static GPIO_TypeDef * const gpio_s [] = GPIO_PORT_LIST;
 
