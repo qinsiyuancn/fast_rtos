@@ -6,13 +6,8 @@
  * ÎÂ¶È´«¸ÐÆ÷
  */
  #include "temperature_tmc435.h"
- #if DEVICE_TMC435
 
-static const char * const temperature_filename = "temperature";
-
-static const struct i2c_device temperature_i2c[] = BOARD_TEMPERATURE;
-static unsigned char cdev = 0;
-static int temperature_open(const char * filename, int flags)
+static int open(const char * filename, int flags)
 {
 	return !strcmp(filename, temperature_filename);	
 }
@@ -36,6 +31,7 @@ static int temperature_write(const void *buf, unsigned long count)
 	i2c_init_master(temperature_i2c[cdev].fd);
 	return 1;		
 }
+
 static int temperature_read(void *buf, unsigned long count)
 {
 	const char remote[] = {1};
