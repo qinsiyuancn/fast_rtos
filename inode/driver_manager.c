@@ -99,7 +99,7 @@ unsigned long driver_getlong(unsigned int driver, unsigned int dev)
     if(driver < (sizeof(list)/sizeof(list[0])))
         if(list[driver])
             if(list[driver]->getlong)
-            return list[driver]->getlong(dev);
+                return list[driver]->getlong(dev);
     return -1ul;
 }
 
