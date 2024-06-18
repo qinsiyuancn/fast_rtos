@@ -1,6 +1,4 @@
-#include "gpio_adapter.h"
 #include "gpio_dev.h"
-#include "gpio.h"
 #define dev_size (sizeof(device_list) / sizeof(device_list[0]))
 
 static struct gpio_device device_list[] = GPIO_DEV_LIST;
