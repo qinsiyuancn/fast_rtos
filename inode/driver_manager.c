@@ -1,7 +1,9 @@
 #include "driver_manager.h"
 #include "driver.h"
 
-static const struct driver * const list[] = DRIVER_LIST_INITER;
+extern driver_pointer DRIVER_LIST_INITER;
+
+static driver_pointer list[] = {DRIVER_LIST_INITER};
 
 unsigned int driver_open(unsigned int driver,  unsigned int dev)
 {

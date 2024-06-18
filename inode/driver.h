@@ -22,9 +22,11 @@
     unsigned long (*getlong)(unsigned int dev);
  };
 
-typedef struct driver {
+struct driver {
     const char * const name;
     const struct file_operation fops;
-} driver;
+};
+
+typedef const struct driver * const driver_pointer;
 
  #endif
