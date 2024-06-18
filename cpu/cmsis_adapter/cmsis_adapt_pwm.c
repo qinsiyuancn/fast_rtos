@@ -13,7 +13,7 @@ static const struct {
     uint32_t channel;
 } list[] = CMSIS_PWM_LIST;
 
-void cmsis_pwm_cfg(unsigned int dev, uint32_t OCMode, uint32_t percent, uint32_t OCPolarity, uint32_t OCNPolarity, uint32_t OCFastMode, uint32_t OCIdleState, uint32_t OCNIdleState)
+void pwm_cfg(unsigned int dev, uint32_t OCMode, uint32_t percent, uint32_t OCPolarity, uint32_t OCNPolarity, uint32_t OCFastMode, uint32_t OCIdleState, uint32_t OCNIdleState)
 {
     TIM_OC_InitTypeDef sConfigOC[1] = {
             {
@@ -24,7 +24,7 @@ void cmsis_pwm_cfg(unsigned int dev, uint32_t OCMode, uint32_t percent, uint32_t
     HAL_TIM_PWM_ConfigChannel(list[dev].htim, sConfig, list[dev].channel);
 }
 
-void cmsis_pwm_cfg_percent(unsigned int dev, uint32_t percent)
+void pwm_cfg_percent(unsigned int dev, uint32_t percent)
 {
     TIM_OC_InitTypeDef sConfigOC[1] = TIM_OC_InitTypeDef sConfigOC[1] = {
         {
@@ -36,7 +36,7 @@ void cmsis_pwm_cfg_percent(unsigned int dev, uint32_t percent)
         HAL_TIM_PWM_ConfigChannel(list[dev].htim, sConfig, list[dev].channel);
 }
 
-void cmsis_pwm_cfg_default(unsigned int dev, unsigned int config)
+void pwm_cfg_default(unsigned int dev, unsigned int config)
 {
     static const TIM_OC_InitTypeDef sConfigOC[] = CMSIS_ADAPT_PWM_CONFIG;
 
@@ -45,7 +45,7 @@ void cmsis_pwm_cfg_default(unsigned int dev, unsigned int config)
             HAL_TIM_PWM_ConfigChannel(list[dev].htim, sConfig, list[dev].channel);
 }
 
-unsigned int cmsis_pwm_run(unsigned int dev)
+unsigned int pwm_run(unsigned int dev)
 {
     if(dev < (sizeof(list)/sizeof(list[0]))){
     /* Enable the Capture compare channel */
@@ -55,7 +55,7 @@ unsigned int cmsis_pwm_run(unsigned int dev)
     return 0;
 }
 
-void cmsis_pwm_init()
+void pwm_init()
 {
     unsigned int i = 0;
     while(i < (sizeof(list)/sizeof(list[0])))

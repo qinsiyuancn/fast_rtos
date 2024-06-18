@@ -3,7 +3,9 @@
 
 #define bus_count (sizeof(bus_list) / sizeof(bus_list[0]))
 
-static const struct bus* const bus_list[] = BUS_LIST;
+extern bus_pointer BUS_LIST;
+
+static bus_pointer bus_list[] = {BUS_LIST};
 
 unsigned char bus_getchar(unsigned int bus, unsigned int dev)
 {

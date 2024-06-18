@@ -87,4 +87,4 @@ static unsigned int start(unsigned int dev, const unsigned char * send_buffer, u
 }
 
 static const struct bus bus = {"uart", {start, stop, getchar}, {send, recv, send_recv}};
-const struct bus * const uart = &bus;
+bus_pointer uart = &bus;

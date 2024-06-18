@@ -51,4 +51,4 @@ static unsigned int send_recv(unsigned int dev, const unsigned char * send_data,
 }
 
 static const struct bus bus = {"i2c", {start, stop, getchar}, {send, recv, send_recv}};
-const struct bus * const i2c = &bus;
+bus_pointer i2c = &bus;

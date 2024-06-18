@@ -25,4 +25,6 @@ struct bus
     const struct buffer_bus buffer;
 };
 
+typedef const struct bus * const bus_pointer;
+
 #endif

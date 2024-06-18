@@ -46,4 +46,4 @@ static unsigned int send_recv(unsigned int dev, const unsigned char * send_data,
     return 0;
 }
 static const struct bus bus = {"gpio", {NULL, NULL, getchar}, {send, recv, send_recv}};
-const struct bus * const gpio = &bus;
+bus_pointer gpio = &bus;
