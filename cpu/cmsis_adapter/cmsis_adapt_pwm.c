@@ -24,7 +24,7 @@ void pwm_cfg(unsigned int dev, uint32_t OCMode, uint32_t percent, uint32_t OCPol
     HAL_TIM_PWM_ConfigChannel(list[dev].htim, sConfig, list[dev].channel);
 }
 
-void pwm_cfg_percent(unsigned int dev, uint32_t percent)
+void pwm_cfg_percent(unsigned int dev, unsigned char percent)
 {
     TIM_OC_InitTypeDef sConfigOC[1] = TIM_OC_InitTypeDef sConfigOC[1] = {
         {

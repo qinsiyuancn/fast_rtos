@@ -9,7 +9,7 @@
 
 extern void pwm_cfg(unsigned int dev, uint32_t OCMode, uint32_t percent, uint32_t OCPolarity, uint32_t OCNPolarity, uint32_t OCFastMode, uint32_t OCIdleState, uint32_t OCNIdleState);
 
-extern void pwm_cfg_percent(unsigned int dev, uint32_t percent);
+extern void pwm_cfg_percent(unsigned int dev, unsigned char percent);
 
 extern void pwm_cfg_default(unsigned int dev, unsigned int config);
 
