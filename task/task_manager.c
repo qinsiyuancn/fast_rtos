@@ -9,7 +9,7 @@ void start_tasks()
 {
     unsigned int i = 0;
     while(i < (sizeof(task_list) / sizeof(task_list[0]))) {
-        task_create(task_list[i]);
+        fast_rtos_task_create(task_list[i]);
         i++;
     }
 }
