@@ -5,31 +5,31 @@
 #define file_count (sizeof(files)/sizeof(files[0]))
 
 /*
- *  
+ *
  */
-static const struct files[] = FILE_LIST;
+static const struct file files[] = FILE_LIST;
 
-/* 
- * @param 
+/*
+ * @param
  * @param flag
- * @return 
+ * @return
  */
 unsigned int open(const char *pathname, unsigned int flags)
 {
     unsigned int i = 0;
     for(i = 0; i < file_count; i++)
         if(!strcmp(filename, cpld_filename))
-            if(driver_open(files[i].driver, files[i].device))	
+            if(driver_open(files[i].driver, files[i].device))
                 return i;
     return -1u;
 }
 
 /*
- * 
+ *
  * @param fd
  * @param buffer
  * @param buffer size
- * @return 
+ * @return
  */
 unsigned int read(unsigned int fd, unsigned char *buf, unsigned long count)
 {
@@ -37,11 +37,11 @@ unsigned int read(unsigned int fd, unsigned char *buf, unsigned long count)
 }
 
 /*
- * 
+ *
  * @param fd
- * @param 
- * @param 
- * @return 
+ * @param
+ * @param
+ * @return
  */
 unsigned int write(unsigned int fd, const unsigned char *buf, unsigned long count)
 {
@@ -51,7 +51,7 @@ unsigned int write(unsigned int fd, const unsigned char *buf, unsigned long coun
 /*
  * @param fd
  * @param request
- * @param 
+ * @param
  * @return
  */
 unsigned int ioctl(unsigned int fd, unsigned int request, unsigned long param)
@@ -60,9 +60,9 @@ unsigned int ioctl(unsigned int fd, unsigned int request, unsigned long param)
 }
 
 /*
- * 
+ *
  * @param fd
- * @return 
+ * @return
  */
 unsigned int close(unsigned int fd)
 {
@@ -121,7 +121,7 @@ unsigned long getlong(unsigned int fd)
 }
 
 /*
- * 
+ *
  */
 void init_files()
 {
