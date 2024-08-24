@@ -2,7 +2,7 @@
 #include "device.h"
 #include "bus_manamger.h"
 
-static struct device device_list[] = init_device();
+static struct device device_list[] = DEVICE_LIST;
 
 unsigned int device_start(unsigned int device, const unsigned char * send_buffer, unsigned int send_size, unsigned char* recv_buffer, unsigned int recv_size)
 {
