@@ -62,5 +62,6 @@ static unsigned int send(unsigned int dev, const unsigned char * data, unsigned 
     config_percent(dev,*data);
     return run(dev);
 }
+
 static const struct bus bus = {"pwm", {NULL}, {send}};
 bus_pointer pwm = &bus;
