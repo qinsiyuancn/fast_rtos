@@ -7,8 +7,8 @@
 struct bus_session
 {
     struct bus_ctrler ctrl;
-    struct buffer_recv recv;
-    struct buffer_send send;
+    struct buffer recv;
+    struct buffer_ro send;
 };
 
 #endif
