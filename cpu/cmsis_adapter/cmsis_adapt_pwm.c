@@ -26,7 +26,7 @@ void pwm_cfg(unsigned int dev, uint32_t OCMode, uint32_t percent, uint32_t OCPol
 
 void pwm_cfg_percent(unsigned int dev, unsigned char percent)
 {
-    TIM_OC_InitTypeDef sConfigOC[1] = TIM_OC_InitTypeDef sConfigOC[1] = {
+    TIM_OC_InitTypeDef sConfigOC[1] = {
         {
             TIM_OCMODE_PWM1, (GET_AIR_PWM_PERIOD(VALUE_STEAM_TIM_CNT_CLK, VALUE_STEAM_PWM_FREQ) * percent / 100, TIM_OCPOLARITY_HIGH,
             0, TIM_OCFAST_DISABLE
@@ -61,4 +61,3 @@ void pwm_init()
     while(i < (sizeof(list)/sizeof(list[0])))
         HAL_TIM_PWM_Start(list[i].htim, list[i++].channel);
 }
-#endif

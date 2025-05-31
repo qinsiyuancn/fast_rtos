@@ -82,4 +82,3 @@ void GpioIntInit(void)
     NVIC_EnableIRQ(EINT3_IRQn);  	
 }
 
-#endif
