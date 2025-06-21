@@ -29,7 +29,7 @@ unsigned long device_getlong(unsigned int device)
     return device < sizeof(device_list) / sizeof(device_list[0]) ? bus_getlong(device_list[device].bus, device_list[device].device) : -1u;
 }
 
-unsigned int device_send(unsigned int device, unsigned char * buffer, unsigned int count)
+unsigned int device_send(unsigned int device, const unsigned char * buffer, unsigned int count)
 {
     return device < sizeof(device_list) / sizeof(device_list[0]) ? bus_send(device_list[device].bus, device_list[device].device, buffer, count) : -1u;
 }

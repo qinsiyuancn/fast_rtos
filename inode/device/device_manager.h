@@ -11,7 +11,7 @@ extern unsigned short device_getshort(unsigned int device);
 
 extern unsigned long device_getlong(unsigned int device);
 
-extern unsigned int device_send(unsigned int device, unsigned char * buffer, unsigned int count);
+extern unsigned int device_send(unsigned int device, const unsigned char * buffer, unsigned int count);
 
 extern unsigned int device_recv(unsigned int device, unsigned char * buffer, unsigned int count);
 
