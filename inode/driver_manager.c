@@ -102,5 +102,3 @@ unsigned long driver_getlong(unsigned int driver, unsigned int dev)
                 return list[driver]->getlong(dev);
     return -1ul;
 }
-
-

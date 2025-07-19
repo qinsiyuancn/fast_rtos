@@ -1,5 +1,5 @@
 /*
- * file.h
+ * driver.h
  * create by qinsiyuan
  *			on 2016-7-22
  */
