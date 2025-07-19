@@ -16,5 +16,5 @@ static unsigned int write(unsigned int dev, const unsigned char *buf, unsigned l
     return 0;
 }
 
-static const struct driver driver = {"i2c_hub", {NULL, NULL, NULL, write}};
-
+static const struct driver driver = {"i2c_hub", NULL,{ NULL, NULL, write}};
+driver_pointer i2c_hub = &driver;
