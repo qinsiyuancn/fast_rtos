@@ -1,31 +1,28 @@
-/*======  ======================================================== */
-#include "app.h"
 #include "task_manager.h"
+#include "service_manager.h"
+#include "ucos_ii.h"
+#include "cpu.h"
 
 int main(void)
 { 
-	SystemInit();
-
-
+    init();
+    SystemInit();
 #if ENA_WDG
-	WDInit();
+    WDInit();
 #endif		 
-	// 操作系统初始化
-	OSInit();
+    OSInit();
+    init_files();
 
-	init_files();//初始化设备文件
+    set_sys_dc_12v_en_off();
+    set_sys_nrtmen_3_en_off();
+    set_sys_nrtmen_12_en_off();
+	
+    led_blue_off();
+    led_red_off();
+    led_yellow_off();
 
-	set_sys_dc_12v_en_off();
-	set_sys_nrtmen_3_en_off();
-	set_sys_nrtmen_12_en_off();
-		
-	led_blue_off();
-	led_red_off();
- 	led_yellow_off();
-
-  start_tasks();
-	// OS的正常运行
-	OSStart();
+    start_tasks();
+    OSStart();
 
 }
 
