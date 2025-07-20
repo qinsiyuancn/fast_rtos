@@ -11,11 +11,11 @@
 /*
  *
  */
-extern int request_service(unsigned long fd, const char *msg, char* ret, unsigned int size);
+extern unsigned int request_service(unsigned long fd, const char *msg, char* ret, unsigned int size);
 
 /*
  *
  */
-extern int request_service_duty(char * msg, char * ret, unsigned int size);
+extern unsigned int request_service_duty(char * msg, char * ret, unsigned int size);
 
 #endif
