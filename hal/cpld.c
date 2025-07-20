@@ -2,32 +2,31 @@
  * cpld.c
  * create by qinsiyuan
  * 			on 2016-7-18
- * 提供ipmc与cpld的交互方案
  */
- #include "service_cpld.h"
+#include "service_cpld.h"
+#include "file_service.h"
 
  /*
-  *	设置cpld操作
-  * @param cpld操作
+  *
   */
- void set_cpld_value(unsigned char v)
- {
-  	setdata("cpld", &v, 1);
- }
+void set_cpld_value(unsigned char v)
+{
+    write_file("cpld", &v, 1);
+}
  
- /*
-  *	设置cpld
-  */
- void cpld_set()
- {
- 	set_cpld_value(1);
- }
+/*
+ *
+ */
+void cpld_set()
+{
+    set_cpld_value(1);
+}
 
  /*
-  *	清除cpld
+  *
   */
- void cpld_clr()
- {
- 	set_cpld_value(0);
- }
+void cpld_clr()
+{
+    set_cpld_value(0);
+}
 
