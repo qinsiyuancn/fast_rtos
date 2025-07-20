@@ -20,11 +20,9 @@ static void fun(void *p_arg)
 	led_yellow_on();
 	OSTimeDlyHMSM(0, 0, 3, 0);		
 	while(1){
-		//监控
 		#if RTM_SUPPORT	
 			service_rtm_power();
 		#endif
-		//监控把手，不用中断了，轮训吧，挺好,本来之前就是中断加轮训,改变全局变量，不如直接读gpio状态...
 		OSTimeDlyHMSM(0, 0, 0, 20);
 	}
 }
