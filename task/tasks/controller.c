@@ -4,7 +4,7 @@
 static task_buffer stack[0x512]; 
 
 /*
- * 监控控制端发过来的命令
+ *
  */
 static  void  controller (void *p_arg)
 {
@@ -17,7 +17,6 @@ static  void  controller (void *p_arg)
 		read(fd, buffer, sizeof(buffer)/sizeof(buffer[0]));
 		request_service_duty(buffer);
 		write(fd,buffer,strlen(buffer));
-		// 线程睡眠20ms,释放CPU
 		OSTimeDlyHMSM(0, 0, 0, 20);
 	}
 }
