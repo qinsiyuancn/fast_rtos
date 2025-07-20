@@ -18,7 +18,7 @@ unsigned int remote_operation(unsigned char dev, unsigned char operation)
 /*
  *
  */
-unsigned  int remote_power_on(unsigned char slot)
+unsigned int remote_power_on(unsigned char slot)
 {
     return remote_operation(slot, I2C_CMD_POWERON);	 
 }
@@ -26,7 +26,7 @@ unsigned  int remote_power_on(unsigned char slot)
 /*
  *
  */
-int remote_power_off(unsigned char slot)
+unsigned int remote_power_off(unsigned char slot)
 {
     return remote_operation(slot, I2C_CMD_POWEROFF);	 
 }

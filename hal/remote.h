@@ -11,11 +11,8 @@ enum remote_cmd
     temperature,
 };
 
-extern int remote_operation(unsigned char slot, unsigned char operation);
-extern int remote_power_on(unsigned char slot);
-extern int remote_power_off(unsigned char slot);
-
-extern int service_board_power_on(char *msg);
-extern int service_board_power_off(char *msg);
+extern unsigned int remote_operation(unsigned char slot, unsigned char operation);
+extern unsigned int remote_power_on(unsigned char slot);
+extern unsigned int remote_power_off(unsigned char slot);
 
 #endif
