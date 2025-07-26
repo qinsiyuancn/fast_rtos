@@ -8,9 +8,9 @@ unsigned int service_slave_power_on(const char *msg, unsigned int fd)
     unsigned int slave = 0;
     const char * order = NULL;
     if(msg){
-        order = strstr(msg, "poweron remote");
+        order = strstr(msg, "poweron slave");
         if(order){
-            if(1 == sscanf(order, "poweron remote:%u\r", &slave)){
+            if(1 == sscanf(order, "poweron slave:%u\r", &slave)){
                 ret = slave_power_on(slave) ? "ok\r" : "request error\r";
 		write(fd, ret, strlen(ret));
             }
@@ -29,9 +29,9 @@ unsigned int service_remote_power_off(const char *msg, unsigned int fd)
     unsigned int slave = 0;
     const char * order = NULL;
     if(msg){
-        order = strstr(msg, "poweroff remote");
+        order = strstr(msg, "poweroff slave");
         if(order){
-            if(1 == sscanf(order, "poweroff remote:%u\r", &slave)){
+            if(1 == sscanf(order, "poweroff slave:%u\r", &slave)){
                 ret = slave_power_off(slave)? "ok\r" : "request error\r";
 		write(fd, ret, strlen(ret));
             }
