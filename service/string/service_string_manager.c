@@ -15,7 +15,7 @@ static out_service const out_service_list[] = {SERVICE_LIST};
 /*
  *
  */
-unsigned int request_service(unsigned long index, const char *msg, unsigned int fd)
+unsigned int request_string_service(unsigned long index, const char *msg, unsigned int fd)
 {
     if(fd < sizeof(out_service_list)/sizeof(out_service_list[0])){
         if(out_service_list[index])
@@ -27,7 +27,7 @@ unsigned int request_service(unsigned long index, const char *msg, unsigned int 
 /*
  *
  */
-unsigned int request_service_duty(const char * msg, unsigned int fd)
+unsigned int request_string_service_duty(const char * msg, unsigned int fd)
 {
     static const char * const error = "no that service!\r";
     unsigned long i = 0;
