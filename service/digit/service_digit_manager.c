@@ -12,7 +12,7 @@ extern out_service SERVICE_LIST;
 
 static out_service const out_service_list[] = {SERVICE_LIST};
 
-unsigned int request_service(unsigned char index, unsigned int fd)
+unsigned int request_digit_service(unsigned char index, unsigned int fd)
 {
     if(index < (sizeof(out_service_list)/sizeof(out_service_list[0])))
         return out_service_list[index](fd);
