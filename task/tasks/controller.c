@@ -8,15 +8,17 @@ static task_buffer stack[0x512];
  */
 static  void  controller (void *p_arg)
 {
-    int fd = 0;
-    char buffer [0x40] = {0};
-    OS_CPU_SysTickInit();
-    fd = open("ttyS",0);
-    ioctl(fd, 3, (char *)'\r');
+    unsigned char buffer[40];
+    unsigned int i = 0;
+    //OS_CPU_SysTickInit();
+    const unsigned int fd = open("ttyS",0);
+    start(fd, NULL, 0, NULL, 0);
     while(1){
-        read(fd, buffer, sizeof(buffer)/sizeof(buffer[0]));
-        request_service_duty(buffer, buffer, sizeof(buffer)/sizeof(buffer[0]));
-        write(fd,buffer,strlen(buffer));
+        i = 0;
+        do{
+            buffer[i] = getchar(fd);
+	}while(buffer[i++] != MESSAGE_END);
+        request_string_service_duty(buffer, fd);
         OSTimeDlyHMSM(0, 0, 0, 20);
     }
 }
