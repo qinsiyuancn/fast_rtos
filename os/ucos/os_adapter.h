@@ -1,5 +1,5 @@
-#ifndef __ADAPT_OS_UCOS_II_H__
-#define __ADAPT_OS_UCOS_II_H__
+#ifndef __ADAPT_OS_H__
+#define __ADAPT_OS_H__
 
 #if UCOS_II
 #include "ucos_ii.h"
@@ -35,6 +35,8 @@ typedef INT8U FastRtosSemaphoreErrorCode;
 #define fast_rtos_mutex_lock(mutex, timeout, error_code) OSMutexPend(mutex, timeput, &error_code)
 #define fast_rtos_mutex_unlock(mutex) OSMutexPost(mutex)
 #define fast_rtos_mutex_deinit(mutex, error_code) OSMutexDel(mutex, OS_DEL_ALWAYS, &error_code)
+
+#define delay(time) OSTimeDlyHMSM(time)
 
 #endif
 
