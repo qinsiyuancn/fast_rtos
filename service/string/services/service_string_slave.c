@@ -1,8 +1,9 @@
-#include "remote.h"
+#include "slave.h"
+#include "file_manager.h"
 /* 
  *
  */
-unsigned int service_remote_power_on(const char *msg, unsigned int fd)
+unsigned int service_slave_power_on(const char *msg, unsigned int fd)
 {
     const char * ret = NULL;
     unsigned int slave = 0;
@@ -23,7 +24,7 @@ unsigned int service_remote_power_on(const char *msg, unsigned int fd)
 /*
  *
  */
-unsigned int service_remote_power_off(const char *msg, unsigned int fd)
+unsigned int service_slave_power_off(const char *msg, unsigned int fd)
 {
     const char * ret = NULL;
     unsigned int slave = 0;
