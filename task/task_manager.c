@@ -2,7 +2,6 @@
 #include "task.h"
 #include "task_config.h"
 #include "cpu.h"
-#include "os_adapter.h"
 
 static const struct Task * const task_list[] = TASK_LIST;
 
@@ -13,5 +12,4 @@ void start_tasks()
         fast_rtos_task_create(task_list[i]);
         i++;
     }
-    fast_rtos_start();
 }
