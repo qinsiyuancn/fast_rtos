@@ -19,7 +19,7 @@ unsigned int slave_operation(unsigned char slave, unsigned char operation)
 /*
  *
  */
-unsigned int slave_power_on(unsigned int slave)
+unsigned int slave_power_on(unsigned char slave)
 {
     return slave_operation(slave, REMOTE_POWERON);
 }
@@ -27,7 +27,7 @@ unsigned int slave_power_on(unsigned int slave)
 /*
  *
  */
-unsigned int slave_power_off(unsigned int slave)
+unsigned int slave_power_off(unsigned char slave)
 {
     return slave_operation(slave, REMOTE_POWEROFF);
 }
