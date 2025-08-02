@@ -1,6 +1,8 @@
 #include "controller.h"
 #include "task.h"
 #include "os_adapter.h"
+#include "file_manager.h"
+#include "service_string_manager.h"
 
 static task_buffer stack[STACK_CONTROLLER_SIZE]; 
 
