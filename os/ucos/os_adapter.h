@@ -38,6 +38,8 @@ typedef INT8U FastRtosSemaphoreErrorCode;
 
 #define delay(time) OSTimeDlyHMSM(time)
 
+#define fast_rtos_start() OSStart()
+
 #endif
 
 #endif
