@@ -13,7 +13,7 @@
 unsigned int slave_operation(unsigned char slave, unsigned char operation)
 {
     const unsigned char data[] = {dev, operation};
-    return write_filewrite_file("slave", data, sizeof(data)); 
+    return write_file("slave", data, sizeof(data));
 }
 
 /*
@@ -21,7 +21,7 @@ unsigned int slave_operation(unsigned char slave, unsigned char operation)
  */
 unsigned int slave_power_on(unsigned int slave)
 {
-    return slave_operation(slave, REMOTE_POWERON);	 
+    return slave_operation(slave, REMOTE_POWERON);
 }
 
 /*
@@ -29,7 +29,7 @@ unsigned int slave_power_on(unsigned int slave)
  */
 unsigned int slave_power_off(unsigned int slave)
 {
-    return slave_operation(slave, REMOTE_POWEROFF);	 
+    return slave_operation(slave, REMOTE_POWEROFF);
 }
 
 
