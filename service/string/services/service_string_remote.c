@@ -2,7 +2,7 @@
 /* 
  *
  */
-unsigned int service_slave_power_on(const char *msg, unsigned int fd)
+unsigned int service_remote_power_on(const char *msg, unsigned int fd)
 {
     const char * ret = NULL;
     unsigned int slave = 0;
