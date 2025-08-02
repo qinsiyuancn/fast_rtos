@@ -10,12 +10,20 @@
 unsigned int service_eeprom_read(const char *msg, unsigned int fd)
 {
     char name[10];
+    unsigned int current = 0;
     unsigned short address = 0;
     unsigned int read_size = 0;
     const char * order = strstr(msg, ORDER_EEPROM_READ);
+    char value[EEPROM_BUFFER_SIZE] = {};
     if(order){
-        if(1 == sscanf(order, ORDER_EEPROM_READ "name:%s addr:0x%hx size:%u\r", name, &address, &read_size))
-            write(fd, ret, eeprom_read(name, address, ret, read_size));
+        if(1 == sscanf(order, ORDER_EEPROM_READ "name:%s addr:0x%hx size:%u\r", name, &address, &read_size)) {
+	    while(read_size){
+                current = eeprom_read(name, address, value, read_size < sizeof(value) ? read_size: sizeof(value));
+                write(fd, value, current);
+		address += current;
+		read_size -=current;
+	    }
+	}
         return 1;
     }
     return 0;
