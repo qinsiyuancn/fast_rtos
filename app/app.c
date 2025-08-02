@@ -1,14 +1,12 @@
 #include "task_manager.h"
-#include "service_manager.h"
-#include "ucos_ii.h"
-#include "cpu.h"
+#include "os_adapter.h"
 
 int main(void)
-{ 
+{
     init();
     start_tasks();
-    OSStart();
-
+    fast_rtos_start();
+    return 0;
 }
 
 
