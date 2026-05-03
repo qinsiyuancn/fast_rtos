@@ -5,7 +5,6 @@
  */
 #include "gpio_lpc17xx.h"
 
-#if CPU_lpc17xx
 static LPC_GPIO_TypeDef * gpio_s [] = GPIO_PORT_LIST;
 
 void set_gpio_on(unsigned char port, unsigned int mask)
@@ -48,4 +47,3 @@ void GpioIntInit(void)
     NVIC_EnableIRQ(EINT3_IRQn);
 }
 
-#endif
