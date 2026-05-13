@@ -371,7 +371,7 @@
 #define IRC_OSC     ( 4000000UL)        /* Internal RC oscillator frequency   */
 #define clock_init() {IRC_OSC, OSC_CLK, RTC_CLK, IRC_OSC}
 
-
+unsigned int SystemFrequency = IRC_OSC; /*!< System Clock Frequency (Core Clock)  */
 
 struct PLL{
     unsigned long * cfg;
@@ -450,7 +450,7 @@ static unsigned int getFrequencyWhenPLL()
     return 0;
 }
 
-static unsigned int getFrequencyFromeRegister()
+static unsigned int getFrequencyFromRegister()
 {
     init_fun init_fun[] = {getFrequencyWhenPLL, getFrequencyDefault}; 
     unsigned int ret = IRC_OSC;
@@ -465,7 +465,8 @@ static unsigned int getFrequencyFromeRegister()
 static unsigned int init()
 {
     init_clock();
-    setFrequency(getFrequencyFromRegister());
+    // setFrequency(getFrequencyFromRegister());
+    SystemFrequency = getFrequencyFromRegister();
     LPC_SC->FLASHCFG = FLASHCFG_Val;
     return 0;
 }
