@@ -23,6 +23,7 @@ struct bus
     const char * const name;
     const struct bus_stream stream;
     const struct bus_buffer buffer;
+    unsigned int (*const init)();
 };
 
 typedef const struct bus * const bus_pointer;
