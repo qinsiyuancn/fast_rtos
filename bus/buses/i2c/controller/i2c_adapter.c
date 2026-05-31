@@ -7,6 +7,7 @@
 #include "i2c_adapter.h"
 #include "i2c_session.h"
 #include "i2c_cpu.h"
+#include "init.h"
 #define i2c_count() (sizeof(bus)/sizeof(bus[0]))
 
 static struct {
@@ -222,7 +223,7 @@ int i2c_session_init(unsigned char fd)
     return cpu_i2c_init(fd);
 }
 
-int i2c_init_all()
+static unsigned int init()
 {
     unsigned int ret = 0;
     unsigned char i = 0;
@@ -232,5 +233,4 @@ int i2c_init_all()
     return ret;
 }
 
-#endif
-
+init_fun i2c_init = init;
