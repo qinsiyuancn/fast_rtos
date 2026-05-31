@@ -17,4 +17,6 @@ extern unsigned int bus_recv(unsigned int bus, unsigned int dev, unsigned char *
 
 extern unsigned int bus_send_recv(unsigned int bus, unsigned int dev, const unsigned char * send_data, unsigned int send_size, unsigned char * recv_data, unsigned int recv_size);
 
+extern unsigned int init();
+
 #endif
