@@ -40,6 +40,8 @@ typedef INT8U FastRtosSemaphoreErrorCode;
 
 #define fast_rtos_start() OSStart()
 
+#define fast_rtos_init() OSInit()
+
 #endif
 
 #endif
