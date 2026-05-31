@@ -36,5 +36,7 @@ extern unsigned int i2c_start(unsigned char fd, unsigned char addr, unsigned cha
 
 extern int i2c_session_init(unsigned char fd);
 
+extern unsigned int i2c_all_init();
+
 #endif
 

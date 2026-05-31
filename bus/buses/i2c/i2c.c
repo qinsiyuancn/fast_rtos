@@ -50,5 +50,10 @@ static unsigned int send_recv(unsigned int dev, const unsigned char * send_data,
     return 0;
 }
 
-static const struct bus bus = {"i2c", {start, stop, getchar}, {send, recv, send_recv}};
+static unsigned int init()
+{
+    return i2c_all_init();
+}
+
+static const struct bus bus = {"i2c", {start, stop, getchar}, {send, recv, send_recv}, init};
 bus_pointer i2c = &bus;
