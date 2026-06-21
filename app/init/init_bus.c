@@ -1,4 +1,5 @@
 #include "init.h"
+#include "bus/bus_manager.h"
 static unsigned int init()
 {
     extern BUS_INIT_LIST;
