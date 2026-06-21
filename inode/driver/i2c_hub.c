@@ -10,8 +10,8 @@
 static unsigned int write(unsigned int dev, const unsigned char *buf, unsigned long count)
 {
     if (buf && count) {
-        unsigned char b = *buf | TEMPERATURE_SELECTOR_ENABLE_BIT;
-        return device_send(dev, b, 1);
+        unsigned char b = *buf | SELECTOR_ENABLE_BIT;
+        return device_send(dev, &b, 1);
     }
     return 0;
 }
