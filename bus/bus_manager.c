@@ -102,7 +102,7 @@ unsigned int bus_stop(unsigned int bus, unsigned int dev)
     return 1;
 }
 
-unsigned int init()
+unsigned int bus_init()
 {
     unsigned int i = 0, ret = 0;
     for(i = 0; i < sizeof(bus_list)/sizeof(bus_list[0]); i++) {
