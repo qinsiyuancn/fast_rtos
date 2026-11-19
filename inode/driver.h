@@ -7,7 +7,7 @@
  #ifndef __DRIVER_H__
  #define __DRIVER_H__
 
- struct file_operation {
+ struct dirver_operation {
     unsigned int (*open)(unsigned int dev);
     unsigned int (*read)(unsigned int dev, unsigned char *buf, unsigned long count);
     unsigned int (*write)(unsigned int dev, const unsigned char *buf, unsigned long count);
@@ -26,7 +26,7 @@ struct stream {
 struct driver {
     const char * const name;
     void (*init)();
-    const struct file_operation fops;
+    const struct driver_operation fops;
     const struct stream stream;
 };
 
